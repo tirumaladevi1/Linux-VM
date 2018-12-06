@@ -1,0 +1,304 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminusername": {
+            "type": "string",
+            "metadata": {
+                "description": "Default admin username"
+            }
+        },
+        "adminpassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Default password"
+            }
+        },
+        "location": {
+            "type":"string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "location for all resources"
+            }
+        },
+        "dnslabelprefix": {
+            "type": "string",
+            "metadata": {
+                "description": "unique DNS name for the public IP used to access the VirtualMachine"
+            }
+        },
+        "storageaccounttype": {
+            "type": "string",
+            "defaultValue": "standard_LRS",
+            "metadata": {
+                "description": "storageaccounttype for the VM"
+            },
+            "allowedValues": [
+                "standard_LRS",
+                "premium_LRS"
+            ]
+        },
+        "storageaccountname1": {
+            "type": "string",
+            "defaultvalue": "tir"
+        } ,
+        "virtualmachinesize": {
+            "type": "string",
+            "defaultValue": "Standard_DS1_v2",
+            "metadata": {
+                "description": "virtual machine size"
+            }
+        }    
+    },   
+    "variables": {
+        "VirtualMachineName1": "VM1",
+        "VirtualMachineName2": "VM2",
+        "NetworkInterface1": "nic1",
+        "NetworkInterface2": "nic2",
+        "StorageAccountName": "[concat(parameters('storageaccountname1'),uniqueString(resourceGroup().id))]",
+        "StorageContainers": "vhds",
+        "PublicIpAddressName1": "publicIp1",
+        "PublicIpAddressName2": "publicIp2",
+        "VirtualNetworkName": "VNET",
+        "SubnetName1": "Subnet-1",
+        "SubnetName2": "Subnet-2",
+        "subnet1Ref": "[resourceid('microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName1'))]",
+        "subnet2Ref": "[resourceid('microsoft.Network/virtualNetworks/subnets', variables('VirtualNetworkname'), variables('SubnetName2'))]",
+        "ImagePublisher": "Canonical",
+        "ImageVersion": "Latest",
+        "imageSKU": "16.04 LTS",
+        "ImageOffer": "UbuntuServer"
+    },
+    "resources": [
+        {
+            "name": "[variables('VirtualMachineName1')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2017-03-30",
+            "location": "[parameters('location')]",
+            "dependsOn":[
+                "[variables('NetworkInterface1')]",
+                "[variables('StorageAccountName')]"
+            ],
+                "comments": "This is the virtual machine that you're building.",
+                "properties":{
+                    "osProfile":{
+                        "computername": "[variables('VirtualMachineName1')]",
+                        "adminUsername": "[parameters('adminusername')]",
+                        "adminPassword": "[parameters('adminpassword')]"
+                    },
+                    "hardwareProfile": {
+                        "vmSize": "[parameters('virtualmachinesize')]"
+                    },
+                    "storageProfile": {
+                        "imageReference":{
+                            "publisher": "[variables('imagePublisher')]",
+                            "offer": "[variables('imageOffer')]",
+                            "sku": "[variables('imageSKU')]",
+                            "version": "[variables('imageVersion')]"
+                        },
+                    "osdisk": {
+                        "name": "osdisk",
+                        "vhd": {
+                            "uri": "[concat('https://',variables('StorageAccountName'),'.blob.core.windows.net/',variables('storagecontainers'),'/',variables('virtualMachineName1'),'-osdisk.vhd')]"
+                        },
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite"
+                    },
+                    "dataDisks": []
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('NetworkInterface1'))]"
+                        }
+                    ]
+                }
+                
+            }            
+        },
+        {
+            "name": "[variables('VirtualMachineName2')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2017-03-30",
+            "location": "[parameters('location')]",
+            "dependsOn":[
+                "[variables('NetworkInterface2')]",
+                "[variables('StorageAccountName')]"
+            ],
+                "comments": "This is the virtual machine that you're building.",
+                "properties":{
+                    "osProfile":{
+                        "computername": "[variables('VirtualMachineName2')]",
+                        "adminUsername": "[parameters('adminusername')]",
+                        "adminPassword": "[parameters('adminpassword')]"
+                    },
+                    "hardwareProfile": {
+                        "vmSize": "[parameters('virtualmachinesize')]"
+                    },
+                    "storageProfile": {
+                        "imageReference":{
+                            "publisher": "[variables('imagePublisher')]",
+                            "offer": "[variables('imageOffer')]",
+                            "sku": "[variables('imageSKU')]",
+                            "version": "[variables('imageVersion')]"
+                        },
+                    "osdisk": {
+                        "name": "osdisk",
+                        "vhd": {
+                            "uri": "[concat('https://',variables('storageAccountName'),'.blob.core.windows.net/',variables('storagecontainers'),'/',variables('virtualMachineName2'),'-osdisk.vhd')]"
+                        },
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite"
+                    },
+                    "dataDisks": []
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('NetworkInterface2'))]"
+                        }
+                    ]
+                }
+                
+            }            
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[variables('StorageAccountName')]",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('location')]",
+            "sku": {
+               "name": "[parameters('storageAccountType')]"
+            },
+            "kind": "Storage",
+            "properties": {} 
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[variables('VirtualNetworkName')]",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('location')]",
+            "comments": "This will build a Virtual Network.",
+            "properties": {
+                "addressSpace":{
+                    "addressPrefixes":[
+                        "10.0.0.0/16"   
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('subnetName1')]",
+                        "properties": {
+                            "addressPrefix": "10.0.0.0/24"
+                        }
+                    },
+                    {
+                        "name": "[variables('subnetName2')]",
+                        "properties": {
+                            "addressPrefix": "10.0.1.0/24"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[variables('PublicIpAddressName1')]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('location')]",
+            "comments": "Public IP for your Primary NIC",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[concat(parameters('dnsLabelPrefix'),'tiru')]"
+                }
+            }
+        },
+        {
+            "name": "[variables('NetworkInterface1')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('location')]",
+            "comments": "This will be your Primary NIC",
+            "dependsOn": [
+                "[variables('publicIpAddressName1')]",
+                "[variables('virtualNetworkName')]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('subnet1Ref')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIpAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', variables('publicIpAddressName1'))]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[variables('publicIpAddressName2')]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('location')]",
+            "comments": "Public IP for your Primary NIC",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[concat(parameters('dnsLabelPrefix'),'devi')]"
+                }
+            }
+        },
+        {
+            "name": "[variables('NetworkInterface2')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('location')]",
+            "comments": "This will be your Secondary NIC",
+            "dependsOn": [
+                "[variables('publicIpAddressName2')]",
+                "[variables('virtualNetworkName')]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('subnet2Ref')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIpAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', variables('publicIpAddressName2'))]"
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {
+        "virtualmachinename1": {
+            "type": "string",
+            "value": "[reference(variables('publicipaddressname1')).dnsSettings.fqdn]"
+        },
+        "virtualmachinename2": {
+            "type": "string",
+            "value": "[reference(variables('publicipaddressname2')).dnsSettings.fqdn]"
+        },
+        "username": {
+            "type": "string",
+            "value": "[parameters('adminusername')]"
+        },
+        "password": {
+            "type": "securestring",
+            "value": "[parameters('adminpassword')]"
+        }
+    }
+
+}
