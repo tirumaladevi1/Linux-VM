@@ -1,0 +1,121 @@
+
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+      "loadbalancersettings": {
+          "type": "object"
+            }
+      },
+  "variables": {    
+  },
+  "resources": [
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[parameters('loadbalancersettings').publicIPAddressName]",
+      "location": "[parameters('loadbalancersettings').location]",
+      "properties": {
+        "publicIPAllocationMethod": "[parameters('loadbalancersettings').publicIPAddressType]",
+        "dnsSettings": {
+          "domainNameLabel": "[parameters('loadbalancersettings').dnsNameforLBIP]"
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[parameters('loadbalancersettings').virtualnetworkname]",
+      "location": "[parameters('loadbalancersettings').location]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('loadbalancersettings').addressprefixes]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[parameters('loadbalancersettings').subnetname]",
+            "properties": {
+              "addressPrefix": "[parameters('loadbalancersettings').addressprefix]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[parameters('loadbalancersettings').nicname]",
+      "location": "[parameters('loadbalancersettings').location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('loadbalancersettings').virtualnetworkname)]",
+        "[concat('Microsoft.Network/loadBalancers/', parameters('loadbalancersettings').loadBalancerName)]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[parameters('loadbalancersettings').subnetRef]"
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[parameters('loadbalancersettings').LBBackendid')]"
+                }
+              ],
+              "loadBalancerInboundNatRules": [
+                {
+                  "id": "[parameters('loadbalancersettings').LbinNAT]"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "name": "[parameters('loadbalancersettings').loadBalancerName1]",
+      "type": "Microsoft.Network/loadBalancers",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', parameters('loadbalancersettings').publicIPAddressName1)]"
+      ],
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "loadBalancerFrontEnd",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[parameters('loadbalancersettings').publicIPAddressID]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "loadBalancerBackEnd"
+          }
+        ],
+        "inboundNatRules": [
+          {
+            "name": "RDP",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[parameters('loadbalancersettings').frontEndIPConfigID]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 3389,
+              "backendPort": 3389,
+              "enableFloatingIP": false
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+
