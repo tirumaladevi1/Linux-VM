@@ -59,16 +59,16 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "subnet": {
-                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName1'), variables('subnetName1'))]"
+                "id": "[parameters('loadbalancersettings').subnetRef1]"
               },
               "loadBalancerBackendAddressPools": [
                 {
-                  "id": "[parameters('loadbalancersettings').LBBackendid')]"
+                  "id": "[parameters('loadbalancersettings').lbBackendid')]"
                 }
               ],
               "loadBalancerInboundNatRules": [
                 {
-                  "id": "[parameters('loadbalancersettings').LbinNAT]"
+                  "id": "[parameters('loadbalancersettings').lbinNat]"
                 }
               ]
             }
