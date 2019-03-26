@@ -1,0 +1,23 @@
+{
+    "schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "storageSettings":{
+            "type":"object"
+        }
+    },
+    "variables": {
+        
+    },
+    "resources": {
+        "type": "Microsoft.Storage/storageAccounts",
+        "name": "[parameters('storageSettings').storageAccountName]",
+        "location": "[parameters('storageSettings').location]",
+        "Apiversion": "2018-07-01",
+        "sku": {
+            "name": "[parameters('storageSettings').storageAccountType]"
+        },
+        "kind": "StorageV2",
+        "properties": {}
+    }
+}
