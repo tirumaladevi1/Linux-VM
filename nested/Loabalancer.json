@@ -105,7 +105,7 @@
             "name": "RDP",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerName1'))]"
+                "id": "[resourceId('Microsoft.Network/loadBalancers',parameters('loadbalancersettings').loadBalancerName1)]"
               },
               "protocol": "Tcp",
               "frontendPort": 3389,
