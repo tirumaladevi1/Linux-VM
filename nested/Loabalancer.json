@@ -50,7 +50,7 @@
       "location": "[parameters('loadbalancersettings').location]",
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', parameters('loadbalancersettings').virtualnetworkname)]",
-        "[concat('Microsoft.Network/loadBalancers/', parameters('loadbalancersettings').loadBalancerName)]"
+        "[concat('Microsoft.Network/loadBalancers/', parameters('loadbalancersettings').loadBalancerName1)]"
       ],
       "properties": {
         "ipConfigurations": [
@@ -59,7 +59,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "subnet": {
-                "id": "[parameters('loadbalancersettings').subnetRef]"
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName1'), variables('subnetName1'))]",
               },
               "loadBalancerBackendAddressPools": [
                 {
@@ -90,7 +90,7 @@
             "name": "loadBalancerFrontEnd",
             "properties": {
               "publicIPAddress": {
-                "id": "[parameters('loadbalancersettings').publicIPAddressID]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName1'))]"
               }
             }
           }
@@ -105,7 +105,7 @@
             "name": "RDP",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[parameters('loadbalancersettings').frontEndIPConfigID]"
+                "id": "[resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerName1'))]"
               },
               "protocol": "Tcp",
               "frontendPort": 3389,
