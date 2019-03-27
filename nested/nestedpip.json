@@ -17,9 +17,9 @@
           "name": "[parameters('pipSettings').publicIPAddressName]",
           "location": "[parameters('pipSettings').location1]",
           "properties": {
-            "publicIPAllocationMethod": "[parameters('pipSettings').publicIPAddressType1]",
+            "publicIPAllocationMethod": "[parameters('pipSettings').pubIpType]",
             "dnsSettings": {
-              "domainNameLabel": "[parameters('pipSettings').dnsNameforLBIP1]"
+              "domainNameLabel": "[parameters('pipSettings').dnsLbName]"
             }
           }
         }
