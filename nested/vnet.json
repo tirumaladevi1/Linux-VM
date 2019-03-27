@@ -11,7 +11,7 @@
             "apiVersion": "2015-06-15",
             "type": "Microsoft.Network/virtualNetworks",
             "name": "[parameters('vNetsettings').virtualNetworkName]",
-            "location": "[parameters('vNetsettings').loacation]",
+            "location": "[parameters('vNetsettings').location]",
             "properties": {
               "addressSpace": {
                 "addressPrefixes": [
