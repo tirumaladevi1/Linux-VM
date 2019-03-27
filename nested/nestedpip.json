@@ -1,0 +1,27 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "pipSettings": {
+         "type": "object"         
+        }
+        
+    },
+    "variables": {
+        
+    },
+    "resources": [
+        {
+          "apiVersion": "2015-06-15",
+          "type": "Microsoft.Network/publicIPAddresses",
+          "name": "[parameters('pipSettings').publicIPAddressName]",
+          "location": "[parameters('pipSettings').location1]",
+          "properties": {
+            "publicIPAllocationMethod": "[parameters('pipSettings').publicIPAddressType1]",
+            "dnsSettings": {
+              "domainNameLabel": "[parameters('pipSettings').dnsNameforLBIP1]"
+            }
+          }
+        }
+    ]
+}
