@@ -45,17 +45,7 @@
                 "osProfile": {
                     "computerName": "[parameters('vmSettings').virtualMachineName]",
                     "adminUsername": "[parameters('vmSettings').userName]",
-                    "linuxConfiguration": {
-                        "disablePasswordAuthentication": true,
-                        "ssh": {
-                            "publicKeys": [
-                                {
-                                    "path": "[parameters('vmSettings').sshKeyPath]",
-                                    "keyData": "[parameters('vmSettings').sshKeysPath]"
-                                }
-                            ]
-                        }
-                    }
+                    "adminPassword":"[parameters('vmSettings').password]"
                 },
                 "storageProfile": {
                     "imageReference": {
