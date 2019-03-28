@@ -1,0 +1,73 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vmSettings": {
+            "type": "object"
+        },
+        "nicSettings": {
+            "type": "object"
+        },
+        "storageSettings": {
+            "type": "object"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "name": "[parameters('vmSettings').virtualMachineName]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2017-03-30",
+            "location": "[parameters('vmSettings').location1]",
+            "comments": "This is the virtual machine that you're building.",
+            "properties": {
+                "osProfile": {
+                    "computerName": "[parameters('vmSettings').virtualMachineName]",
+                    "adminUsername": "[parameters('vmSettings').userName]",
+                    "adminPassword": "[parameters('vmSettings').password]",
+                    "windowsConfiguration": {
+                        "provisionVmAgent": "true"
+                    }
+                },
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSettings').virtualmachinesize]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2016-Datacenter",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "osdisk",
+                        "vhd": {
+                            "uri": "[concat('https://',parameters('storageSettings').storageName,'.blob.core.windows.net/',parameters('storageSettings').storagecontainers,'/',parameters('vmSettings').virtualMachineName,'-osdisk.vhd')]"
+                        },
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite"
+                    },
+                    "dataDisks": []
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('nicSettings').nicName)]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[parameters('storageSettings').storageName]",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('storageSettings').location1]",
+            "sku": {
+                "name": "[parameters('storageSettings').storageAccountType]"
+            },
+            "kind": "Storage",
+            "properties": {}
+        }
+    ]
+}
