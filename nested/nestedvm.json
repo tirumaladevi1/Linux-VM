@@ -19,7 +19,7 @@
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2017-03-30",
             "dependsOn": [
-                "[concat('Microsoft.Storage/storageAccounts/', parameters(storageSettings).storageName]"
+                "[concat('Microsoft.Storage/storageAccounts/', parameters('storageSettings').storageName)]"
                 
             ],
             "location": "[parameters('vmSettings').location1]",
