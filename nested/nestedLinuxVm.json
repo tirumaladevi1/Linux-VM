@@ -1,0 +1,85 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vmSettings": {
+            "type": "object"
+        },
+        "nicSettings": {
+            "type": "object"
+        },
+        "storageSettings": {
+            "type": "object"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2016-04-30-preview",
+            "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', parameters('storageSettings').storageName))]"
+            ],
+            "location": "[parameters('vmSettings').location1]",
+            "name": "[parameters('vmSettings').virtualMachineName]",
+            "properties": {
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true,
+                        "storageUri": "[concat('http://', parameters('storageSettings').storageName, '.blob.core.windows.net')]"
+                    }
+                },
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSettings').virtualmachinesize]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',  parameters('nicSettings').nicName)]",
+                            "properties": {
+                                "primary": true
+                            }
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('vmSettings').virtualMachineName]",
+                    "adminUsername": "[parameters('vmSettings').userName]",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": true,
+                        "ssh": {
+                            "publicKeys": [
+                                {
+                                    "path": "[parameters('vmSettings').sshKeyPath]",
+                                    "keyData": "[parameters('vmSettings').sshKeysPath]"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[parameters('vmSettings').imagePublisher]",
+                        "offer": "[parameters('vmSettings').imageOffer]",
+                        "sku": "[parameters('vmSettings').ubuntuOSVersion]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "createOption": "FromImage"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[parameters('storageSettings').storageName]",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('storageSettings').location1]",
+            "sku": {
+                "name": "[parameters('storageSettings').storageAccountType]"
+            },
+            "kind": "Storage",
+            "properties": {}
+        }
+    ]
+}
