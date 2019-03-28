@@ -18,6 +18,10 @@
             "name": "[parameters('vmSettings').virtualMachineName]",
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2017-03-30",
+            "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', variables('storageName'))]"
+                
+            ],
             "location": "[parameters('vmSettings').location1]",
             "comments": "This is the virtual machine that you're building.",
             "properties": {
