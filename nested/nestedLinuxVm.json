@@ -61,6 +61,32 @@
             }
         },
         {
+          "apiVersion": "2018-06-01",
+          "type":"Microsoft.Compute/virtualMachines/extensions",
+          "name": "config-app",
+          "location": "[parameters('vmSettings').location1]",
+          "dependsOn": [
+          "[concat('Microsoft.Compute/virtualMachines/', parameters(vmSettings).virtualMachineName)]"
+          ],
+          "tags": {
+          "displayName": "config-app"
+          },
+          "properties": {
+          "publisher": "Microsoft.Azure.Extensions",
+          "type": "CustomScript",
+          "typeHandlerVersion": "2.0",
+          "autoUpgradeMinorVersion": true,
+          "settings": {
+              "fileUris": [
+              "https://github.com/tirumaladevi1/Linux-VM/blob/master/LAMP.sh"
+              ]
+          },
+          "protectedSettings": {
+              "commandToExecute": "sh Lamp.sh"
+          }
+          }
+      },
+        {
             "type": "Microsoft.Storage/storageAccounts",
             "name": "[parameters('storageSettings').storageName]",
             "apiVersion": "2017-06-01",
