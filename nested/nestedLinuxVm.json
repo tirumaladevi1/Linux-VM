@@ -66,10 +66,10 @@
           "name": "config-app",
           "location": "[parameters('vmSettings').location1]",
           "dependsOn": [
-          "[concat('Microsoft.Compute/virtualMachines/', parameters(vmSettings).virtualMachineName)]"
+          "[concat('Microsoft.Compute/virtualMachines/', parameters('vmSettings').virtualMachineName)]"
           ],
           "tags": {
-          "displayName": "config-app"
+          "displayName": "templatedeploy"
           },
           "properties": {
           "publisher": "Microsoft.Azure.Extensions",
