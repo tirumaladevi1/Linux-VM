@@ -63,7 +63,7 @@
         {
           "apiVersion": "2018-06-01",
           "type":"Microsoft.Compute/virtualMachines/extensions",
-          "name": "[concat(parameters('vmSettings').virtualMachineName/', 'exten')]",
+          "name": "[concat(parameters('vmSettings').virtualMachineName', '/exten')]",
           "location": "[parameters('vmSettings').location1]",
           "dependsOn": [
           "[concat('Microsoft.Compute/virtualMachines/', parameters('vmSettings').virtualMachineName)]"
