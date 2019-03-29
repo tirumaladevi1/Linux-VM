@@ -45,7 +45,7 @@
                 "osProfile": {
                     "computerName": "[parameters('vmSettings').virtualMachineName]",
                     "adminUsername": "[parameters('vmSettings').userName]",
-                    "adminPassword":"[parameters('vmSettings').password]"
+                    "adminPassword": "[parameters('vmSettings').password]"
                 },
                 "storageProfile": {
                     "imageReference": {
@@ -61,31 +61,31 @@
             }
         },
         {
-          "apiVersion": "2018-06-01",
-          "type":"Microsoft.Compute/virtualMachines/extensions",
-          "name": "[concat(parameters('vmSettings').virtualMachineName, '/', 'exten')]",
-          "location": "[parameters('vmSettings').location1]",
-          "dependsOn": [
-          "[concat('Microsoft.Compute/virtualMachines/', parameters('vmSettings').virtualMachineName)]"
-          ],
-          "tags": {
-          "displayName": "templatedeploy"
-          },
-          "properties": {
-          "publisher": "Microsoft.Azure.Extensions",
-          "type": "CustomScript",
-          "typeHandlerVersion": "2.0",
-          "autoUpgradeMinorVersion": true,
-          "settings": {
-              "fileUris": [
-              "https://github.com/tirumaladevi1/Linux-VM/blob/master/LAMP.sh"
-              ]
-          },
-          "protectedSettings": {
-              "commandToExecute": "sh Lamp.sh"
-          }
-          }
-      },
+            "apiVersion": "2018-06-01",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(parameters('vmSettings').virtualMachineName, '/', 'exten')]",
+            "location": "[parameters('vmSettings').location1]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', parameters('vmSettings').virtualMachineName)]"
+            ],
+            "tags": {
+                "displayName": "templatedeploy"
+            },
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": [
+                        "https://github.com/tirumaladevi1/Linux-VM/blob/master/lamp.sh"
+                    ]
+                },
+                "protectedSettings": {
+                    "commandToExecute": "sh lamp.sh"
+                }
+            }
+        },
         {
             "type": "Microsoft.Storage/storageAccounts",
             "name": "[parameters('storageSettings').storageName]",
