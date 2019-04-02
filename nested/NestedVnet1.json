@@ -207,7 +207,7 @@
                             },
                             "privateIPAllocationMethod": "Dynamic",
                             "publicIpAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', parameters('spokeVnetSettings').publicIpAddressName2]"
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', parameters('spokeVnetSettings').publicIpAddressName2)]"
                             }
                         }
                     }
