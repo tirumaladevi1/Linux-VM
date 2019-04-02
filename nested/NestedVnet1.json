@@ -118,13 +118,13 @@
                 },
                 "subnets": [
                     {
-                        "name": "[parameters('spokeVnetSettings').subnet1Name]",
+                        "name": "[parameters('spokeVnetSettings').subnetName1]",
                         "properties": {
                             "addressPrefix": "10.0.0.0/24"
                         }
                     },
                     {
-                        "name": "[parameters('spokeVnetSettings').subnet2Name]",
+                        "name": "[parameters('spokeVnetSettings').subnetName2]",
                         "properties": {
                             "addressPrefix": "10.0.1.0/24"
                         }
