@@ -106,7 +106,7 @@
         },
         {
             "type": "Microsoft.Network/virtualNetworks",
-            "name": "[parameters('spokeVnetSettings').virtualNetworkName]",
+            "name": "[parameters('spokeVnetSettings').virtualNetworkName1]",
             "apiVersion": "2017-06-01",
             "location": "[parameters('spokeVnetSettings').location]",
             "comments": "This will build a Virtual Network.",
@@ -166,7 +166,7 @@
             "comments": "This will be your Primary NIC",
             "dependsOn": [
                 "[concat('Microsoft.Network/publicIPAddresses/', parameters('spokeVnetSettings').publicIpAddressName1)]",
-                "[concat(Microsoft.Network/virtualNetworks/', parameters('spokeVnetSettings').virtualNetworkName)]",
+                "[concat(Microsoft.Network/virtualNetworks/', parameters('spokeVnetSettings').virtualNetworkName1)]",
                 "[concat(Microsoft.Network/networkSecurityGroups/', parameters('spokeVnetSettings').networkSecurityGroupName)]"
             ],
             "properties": {
@@ -194,7 +194,7 @@
             "comments": "This will be your Secondary NIC",
             "dependsOn": [
                 "[concat('Microsoft.Network/publicIPAddresses/', parameters('spokeVnetSettings').publicIpAddressName2)]",
-                "[concat(Microsoft.Network/virtualNetworks/', parameters('spokeVnetSettings').virtualNetworkName)]",
+                "[concat(Microsoft.Network/virtualNetworks/', parameters('spokeVnetSettings').virtualNetworkName1)]",
                 "[concat(Microsoft.Network/networkSecurityGroups/', parameters('spokeVnetSettings').networkSecurityGroupName)]"
             ],
             "properties": {
