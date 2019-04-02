@@ -32,7 +32,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces',  parameters('spokeVnetSettings').nic1Name]",
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',  parameters('spokeVnetSettings').nic1Name)]",
                             "properties": {
                                 "primary": true
                             }
