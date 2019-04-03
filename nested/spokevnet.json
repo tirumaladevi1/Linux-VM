@@ -1,0 +1,159 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "spokeVnetSettings": {
+            "type": "object"
+        }
+    },
+    "variables": {
+  
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2016-04-30-preview",
+            "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', parameters('spokeVnetSettings').storageAccountName)]",
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('spokeVnetSettings').nic1Name)]"
+            ],
+            "location": "[parameters('spokeVnetSettings').location]",
+            "name": "[parameters('spokeVnetSettings').virtualMachineName1]",
+            "properties": {
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true,
+                        "storageUri": "[concat('http://', parameters('spokeVnetSettings').storageAccountName, '.blob.core.windows.net')]"
+                    }
+                },
+                "hardwareProfile": {
+                    "vmSize": "[parameters('spokeVnetSettings').virtualMachineSize]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',  parameters('spokeVnetSettings').nic1Name)]",
+                            "properties": {
+                                "primary": true
+                            }
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('spokeVnetSettings').virtualMachineName1]",
+                    "adminUsername": "[parameters('spokeVnetSettings').adminUsername]",
+                    "adminPassword": "[parameters('spokeVnetSettings').adminPassword]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[parameters('spokeVnetSettings').imagePublisher]",
+                        "offer": "[parameters('spokeVnetSettings').imageOffer]",
+                        "sku": "[parameters('spokeVnetSettings').ubuntuOSVersion]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "createOption": "FromImage"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('spokeVnetSettings').virtualNetworkName1]",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('spokeVnetSettings').location]",
+            "comments": "This will build a Virtual Network.",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.0.0/16"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('spokeVnetSettings').subnetName1]",
+                        "properties": {
+                            "addressPrefix": "10.0.0.0/24"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[parameters('spokeVnetSettings').publicIpAddressName1]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('spokeVnetSettings').location]",
+            "comments": "Public IP for your Primary NIC",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[concat(parameters('spokeVnetSettings').dnsLabelPrefix,'sample')]"
+                }
+            }
+        },
+        {
+            "name": "[parameters('spokeVnetSettings').nic1Name]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('spokeVnetSettings').location]",
+            "comments": "This will be your Primary NIC",
+            "dependsOn": [
+                "[concat('Microsoft.Network/publicIPAddresses/', parameters('spokeVnetSettings').publicIpAddressName1)]",
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('spokeVnetSettings').virtualNetworkName1)]",
+                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('spokeVnetSettings').networkSecurityGroupName)]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[parameters('spokeVnetSettings').subnet1Ref]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIpAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', parameters('spokeVnetSettings').publicIpAddressName1)]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[parameters('spokeVnetSettings').storageAccountName]",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('spokeVnetSettings').location]",
+            "sku": {
+                "name": "[parameters('spokeVnetSettings').storageAccountType]"
+            },
+            "kind": "Storage",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('spokeVnetSettings').networkSecurityGroupName]",
+            "apiVersion": "2015-06-15",
+            "location": "[parameters('spokeVnetSettings').location]",
+            "properties": {
+                "securityRules": [
+                    {
+                      "name": "first_rule",
+                      "properties": {
+                        "description": "This is the first rule",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "23-45",
+                        "destinationPortRange": "46-56",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 123,
+                        "direction": "Inbound"
+                      }
+                    }
+                  ]
+            }
+        }
+    ]
+}
