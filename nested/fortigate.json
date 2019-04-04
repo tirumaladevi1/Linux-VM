@@ -67,8 +67,8 @@
             "name": "[parameters('fortigateSettings').virtualNetworkName]",
             "apiVersion": "2017-06-01",
             "dependsOn": [
-                "[concat('Microsoft.Network/routeTables/', parameters('vNetPeeringSettings').routeTable1Name)]",
-                "[concat('Microsoft.Network/routeTables/', parameters('vNetPeeringSettings').routeTable2Name)]"
+                "[concat('Microsoft.Network/routeTables/', parameters('vNetPeeringSettings').fgrouteTable1Name)]",
+                "[concat('Microsoft.Network/routeTables/', parameters('vNetPeeringSettings').fgrouteTable2Name)]"
             ],
             "location": "[parameters('fortigateSettings').location]",
             "comments": "This will build a Virtual Network.",
