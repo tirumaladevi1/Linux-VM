@@ -1,0 +1,159 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "endUserVnetSettings": {
+            "type": "object"
+        }
+    },
+    "variables": {
+  
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2016-04-30-preview",
+            "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', parameters('endUserVnetSettings').storageAccountName)]",
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('endUserVnetSettings').endUsernicName)]"
+            ],
+            "location": "[parameters('endUserVnetSettings').location]",
+            "name": "[parameters('endUserVnetSettings').virtualMachineName1]",
+            "properties": {
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true,
+                        "storageUri": "[concat('http://', parameters('endUserVnetSettings').storageAccountName, '.blob.core.windows.net')]"
+                    }
+                },
+                "hardwareProfile": {
+                    "vmSize": "[parameters('endUserVnetSettings').virtualMachineSize]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',  parameters('endUserVnetSettings').endUsernicName)]",
+                            "properties": {
+                                "primary": true
+                            }
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('endUserVnetSettings').virtualMachineName1]",
+                    "adminUsername": "[parameters('endUserVnetSettings').adminUsername]",
+                    "adminPassword": "[parameters('endUserVnetSettings').adminPassword]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[parameters('endUserVnetSettings').imagePublisher]",
+                        "offer": "[parameters('endUserVnetSettings').imageOffer]",
+                        "sku": "[parameters('endUserVnetSettings').ubuntuOSVersion]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "createOption": "FromImage"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('endUserVnetSettings').virtualNetworkName1]",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('endUserVnetSettings').location]",
+            "comments": "This will build a Virtual Network.",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.0.0/16"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('endUserVnetSettings').subnetName1]",
+                        "properties": {
+                            "addressPrefix": "10.0.0.0/24"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[parameters('endUserVnetSettings').publicIpAddressName1]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('endUserVnetSettings').location]",
+            "comments": "Public IP for your Primary NIC",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[concat(parameters('endUserVnetSettings').dnsLabelPrefix,'sample')]"
+                }
+            }
+        },
+        {
+            "name": "[parameters('endUserVnetSettings').endUsernicName]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('endUserVnetSettings').location]",
+            "comments": "This will be your Primary NIC",
+            "dependsOn": [
+                "[concat('Microsoft.Network/publicIPAddresses/', parameters('endUserVnetSettings').publicIpAddressName1)]",
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('endUserVnetSettings').virtualNetworkName1)]",
+                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('endUserVnetSettings').networkSecurityGroupName)]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[parameters('endUserVnetSettings').subnet1Ref]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIpAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', parameters('endUserVnetSettings').publicIpAddressName1)]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[parameters('endUserVnetSettings').storageAccountName]",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('endUserVnetSettings').location]",
+            "sku": {
+                "name": "[parameters('endUserVnetSettings').storageAccountType]"
+            },
+            "kind": "Storage",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('endUserVnetSettings').networkSecurityGroupName]",
+            "apiVersion": "2015-06-15",
+            "location": "[parameters('endUserVnetSettings').location]",
+            "properties": {
+                "securityRules": [
+                    {
+                      "name": "first_rule",
+                      "properties": {
+                        "description": "This is the first rule",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "23-45",
+                        "destinationPortRange": "46-56",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 123,
+                        "direction": "Inbound"
+                      }
+                    }
+                  ]
+            }
+        }
+    ]
+}
