@@ -66,7 +66,7 @@
                     {
                         "name": "[parameters('workloadSettings').subnetName]",
                         "properties": {
-                            "addressPrefix": "10.0.0.0/24"
+                            "addressPrefix": "[parameters(workloadSettings).wlsubnetPrefix]"
                         }
                     }
                 ]
@@ -136,6 +136,24 @@
                       }
                     }
                   ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[parameters('vNetPeeringSettings').wlrouteTableName]",
+            "apiVersion": "2017-10-01",
+            "location": "[parameters('vNetPeeringSettings').location]",
+            "properties": {
+                "routes": [
+                    {
+                        "name": "[concat('to', '-', parameters('workloadSettings').subnetName)]",
+                        "properties": {
+                            "addressPrefix": "[parameters('workloadSettings').wlsubnetPrefix]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[parameters('workloadSettings').wlAddress]"
+                        }
+                    }
+                ]
             }
         }
     ]
