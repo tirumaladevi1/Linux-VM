@@ -215,7 +215,7 @@
         },
         {
             "type": "Microsoft.Network/routeTables",
-            "name": "[parameters('vNetPeeringSettings').routeTable1Name]",
+            "name": "[parameters('vNetPeeringSettings').fgrouteTable1Name]",
             "apiVersion": "2015-06-15",
             "location": "[parameters('vNetPeeringSettings').location]",
             "properties": {
@@ -233,7 +233,7 @@
         },
         {
             "type": "Microsoft.Network/routeTables",
-            "name": "[parameters('vNetPeeringSettings').routeTable2Name]",
+            "name": "[parameters('vNetPeeringSettings').fgrouteTable2Name]",
             "apiVersion": "2017-10-01",
             "location": "[parameters('vNetPeeringSettings').location]",
             "properties": {
@@ -243,7 +243,7 @@
                         "properties": {
                             "addressPrefix": "[parameters('fortigateSettings').fgSubnet1Prefix]",
                             "nextHopType": "VirtualAppliance",
-                            "nextHopIpAddress": "[parameters('fortigateSettings').FGDMZAddress]"
+                            "nextHopIpAddress": "[parameters('fortigateSettings').FGinternalAddress]"
                         }
                     },
                     {
@@ -251,7 +251,7 @@
                         "properties": {
                             "AddressPrefix": "0.0.0.0/0",
                             "nextHopType": "VirtualAppliance",
-                            "nextHopIPAddress": "[parameters('fortigateFirewallSettings').FGDMZAddress]"
+                            "nextHopIPAddress": "[parameters('fortigateFirewallSettings').FGinternalAddress]"
                         }
                     }
                 ]
