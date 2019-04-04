@@ -218,7 +218,7 @@
         },
         {
             "type": "Microsoft.Network/routeTables",
-            "name": "[parameters('vNetPeeringSettings').fgrouteTable1Name]",
+            "name": "[parameters('fortigateSettings').fgrouteTable1Name]",
             "apiVersion": "2015-06-15",
             "location": "[parameters('vNetPeeringSettings').location]",
             "properties": {
@@ -236,7 +236,7 @@
         },
         {
             "type": "Microsoft.Network/routeTables",
-            "name": "[parameters('vNetPeeringSettings').fgrouteTable2Name]",
+            "name": "[parameters('fortigateSettings').fgrouteTable2Name]",
             "apiVersion": "2017-10-01",
             "location": "[parameters('vNetPeeringSettings').location]",
             "properties": {
