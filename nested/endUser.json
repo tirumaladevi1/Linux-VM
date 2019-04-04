@@ -59,7 +59,7 @@
         },
         {
             "type": "Microsoft.Network/virtualNetworks",
-            "name": "[parameters('endUserVnetSettings').virtualNetworkName1]",
+            "name": "[parameters('endUserVnetSettings').virtualNetworkName]",
             "apiVersion": "2017-06-01",
             "location": "[parameters('endUserVnetSettings').location]",
             "comments": "This will build a Virtual Network.",
@@ -100,7 +100,7 @@
             "comments": "This will be your Primary NIC",
             "dependsOn": [
                 "[concat('Microsoft.Network/publicIPAddresses/', parameters('endUserVnetSettings').publicIpAddressName1)]",
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('endUserVnetSettings').virtualNetworkName1)]",
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('endUserVnetSettings').virtualNetworkName)]",
                 "[concat('Microsoft.Network/networkSecurityGroups/', parameters('endUserVnetSettings').networkSecurityGroupName)]"
             ],
             "properties": {
