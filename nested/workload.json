@@ -4,6 +4,9 @@
     "parameters": {
         "workloadSettings": {
             "type": "object"
+        },
+        "vNetPeeringSettings": {
+            "type": "object"
         }
     },
     "variables": {
