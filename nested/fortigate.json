@@ -261,7 +261,7 @@
             "apiVersion": "2016-06-01",
             "type": "Microsoft.Logic/workflows",
             "name": "[parameters('vNetPeeringSettings').vNet1to2peerName]",
-            "location": "[parameters('location')]",
+            "location": "[parameters('vNetPeeringSettings').location]",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('fortigateSettings').virtualNetworkName)]",
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('workloadSettings').virtualNetworkName)]"
@@ -281,7 +281,7 @@
             "apiVersion": "2016-06-01",
             "type": "Microsoft.Logic/workflows",
             "name": "[parameters('vNetPeeringSettings').vNet2to1peerName]",
-            "location": "[parameters('location')]",
+            "location": "[parameters('vNetPeeringSettings').location]",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('fortigateSettings').virtualNetworkName)]",
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('workloadSettings').virtualNetworkName)]"
