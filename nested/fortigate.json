@@ -254,7 +254,7 @@
                         "properties": {
                             "AddressPrefix": "0.0.0.0/0",
                             "nextHopType": "VirtualAppliance",
-                            "nextHopIPAddress": "[parameters('fortigateFirewallSettings').FGinternalAddress]"
+                            "nextHopIPAddress": "[parameters('fortigateSettings').FGinternalAddress]"
                         }
                     }
                 ]
