@@ -70,7 +70,7 @@
             "name": "[parameters('fortigateSettings').virtualNetworkName]",
             "apiVersion": "2017-06-01",
             "dependsOn": [
-                "[concat('Microsoft.Network/routeTables/', parameters('vNetPeeringSettings').fgrouteTable1Name)]",
+                "[concat('Microsoft.Network/routeTables/', parameters('vNetPeeringSettings').fortigateSettings)]",
                 "[concat('Microsoft.Network/routeTables/', parameters('vNetPeeringSettings').fgrouteTable2Name)]"
             ],
             "location": "[parameters('fortigateSettings').location]",
