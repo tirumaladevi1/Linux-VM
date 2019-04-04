@@ -22,7 +22,7 @@
             "dependsOn": [
                 "[concat('Microsoft.Network/networkInterfaces/', parameters('fortigateSettings').fortiGateNic1Name)]",
                 "[concat('Microsoft.Network/networkInterfaces/', parameters('fortigateSettings').fortiGateNic2Name)]",
-                "[concat('Microsoft.Compute/availabilitySets'/', parameters('fortigateSettings').fgAvailabilitysetName)]"
+                "[concat('Microsoft.Compute/availabilitySets/', parameters('fortigateSettings').fgAvailabilitysetName)]"
             ],
             "location": "[parameters('fortigateSettings').location]",
             "name": "[parameters('fortigateSettings').virtualmachineName]",
