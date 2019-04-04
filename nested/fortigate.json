@@ -111,19 +111,6 @@
             }
         },
         {
-            "name": "[parameters('fortigateSettings').fortiGatepublicIpAddressName2]",
-            "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "2017-06-01",
-            "location": "[parameters('fortigateSettings').location]",
-            "comments": "Public IP for your Primary NIC",
-            "properties": {
-                "publicIPAllocationMethod": "Dynamic",
-                "dnsSettings": {
-                    "domainNameLabel": "[concat(parameters('fortigateSettings').dnsLabelPrefix,'test123')]"
-                }
-            }
-        },
-        {
             "name": "[parameters('fortigateSettings').fortiGateNic1Name]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2017-06-01",
@@ -158,7 +145,6 @@
             "location": "[parameters('fortigateSettings').location]",
             "comments": "This will be your Secondary NIC",
             "dependsOn": [
-                "[concat('Microsoft.Network/publicIPAddresses/', parameters('fortigateSettings').fortiGatepublicIpAddressName2)]",
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('fortigateSettings').virtualNetworkName)]",
                 "[concat('Microsoft.Network/networkSecurityGroups/', parameters('fortigateSettings').fgnetworkSecurityGroupName)]"
             ],
@@ -170,10 +156,7 @@
                             "subnet": {
                                 "id": "[parameters('fortigateSettings').fgsubnet2Ref]"
                             },
-                            "privateIPAllocationMethod": "Dynamic",
-                            "publicIpAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', parameters('fortigateSettings').fortiGatepublicIpAddressName2)]"
-                            }
+                            "privateIPAllocationMethod": "Dynamic"
                         }
                     }
                 ]
