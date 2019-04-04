@@ -137,27 +137,6 @@
                     }
                   ]
             }
-        },
-        {
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[concat(parameters('workloadsSettings').virtualMachineName,1,'/',parameters('workloadsSettings').extName)]",
-            "apiVersion": "2018-06-01",
-            "location": "[parameters('location')]",
-            "properties": {
-                "publisher": "Microsoft.Azure.Extensions",
-                "type": "CustomScript",
-                "typeHandlerVersion": "2.0",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "fileUris": [
-                        "[parameters('workloadSettings').scriptUrl]"
-                    ],
-                    "commandToExecute": "sh webgoat.sh"
-                }
-            },
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/',parameters('workloadSettings').virtualmachineName)]"
-            ]
         }
     ]
 }
