@@ -71,7 +71,7 @@
                 },
                 "subnets": [
                     {
-                        "name": "[parameters('endUserVnetSettings').subnetName1]",
+                        "name": "[parameters('endUserVnetSettings').subnetName]",
                         "properties": {
                             "addressPrefix": "10.0.0.0/24"
                         }
