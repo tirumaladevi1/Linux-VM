@@ -1,0 +1,163 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workloadSettings": {
+            "type": "object"
+        }
+    },
+    "variables": {
+  
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2016-04-30-preview",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('workloadSettings').wlNicName)]"
+            ],
+            "location": "[parameters('workloadSettings').location]",
+            "name": "[parameters('workloadSettings').virtualmachineName]",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('workloadSettings').virtualMachineSize]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',  parameters('workloadSettings').wlNicName)]",
+                            "properties": {
+                                "primary": true
+                            }
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('workloadSettings').virtualmachineName]",
+                    "adminUsername": "[parameters('workloadSettings').adminUsername]",
+                    "adminPassword": "[parameters('workloadSettings').adminPassword]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[parameters('workloadSettings').imagePublisher]",
+                        "offer": "[parameters('workloadSettings').imageOffer]",
+                        "sku": "[parameters('workloadSettings').ubuntuOSVersion]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "createOption": "FromImage"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('workloadSettings').virtualNetworkName]",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('workloadSettings').location]",
+            "comments": "This will build a Virtual Network.",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.0.0/16"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('workloadSettings').subnetName]",
+                        "properties": {
+                            "addressPrefix": "10.0.0.0/24"
+                        }
+                    }
+                ]
+            }
+        },
+        
+        {
+            "name": "[parameters('workloadSettings').publicIpAddressName]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('workloadSettings').location]",
+            "comments": "Public IP for your Primary NIC",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[concat(parameters('workloadSettings').dnsLabelPrefix,'test')]"
+                }
+            }
+        },
+        {
+            "name": "[parameters('workloadSettings').wlNicName]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('workloadSettings').location]",
+            "comments": "This will be your Primary NIC",
+            "dependsOn": [
+                "[concat('Microsoft.Network/publicIPAddresses/', parameters('workloadSettings').publicIpAddressName)]",
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('workloadSettings').virtualNetworkName)]",
+                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('workloadSettings').networkSecurityGroupName)]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[parameters('workloadSettings').subnetRef]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIpAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', parameters('workloadSettings').publicIpAddressName)]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('workloadSettings').networkSecurityGroupName]",
+            "apiVersion": "2015-06-15",
+            "location": "[parameters('workloadSettings').location]",
+            "properties": {
+                "securityRules": [
+                    {
+                      "name": "first_rule",
+                      "properties": {
+                        "description": "This is the first rule",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "23-45",
+                        "destinationPortRange": "46-56",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 123,
+                        "direction": "Inbound"
+                      }
+                    }
+                  ]
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(parameters('workloadsSettings').virtualMachineName,1,'/',parameters('workloadsSettings').extName)]",
+            "apiVersion": "2018-06-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": [
+                        "[parameters('workloadSettings').scriptUrl]"
+                    ],
+                    "commandToExecute": "sh webgoat.sh"
+                }
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/',parameters('workloadSettings').virtualmachineName)]"
+            ]
+        }
+    ]
+}
