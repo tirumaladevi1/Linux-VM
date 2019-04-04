@@ -1,0 +1,301 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "fortigateSettings": {
+            "type": "object"
+        },
+        "vNetPeeringSettings": {
+            "type": "object"
+        }
+    },
+    "variables": {
+  
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2016-04-30-preview",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('fortigateSettings').fortiGateNic1Name)]",
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('fortigateSettings').fortiGateNic2Name)]",
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('fortigateSettings').fgAvailabilitysetName)]"
+            ],
+            "location": "[parameters('fortigateSettings').location]",
+            "name": "[parameters('fortigateSettings').virtualmachineName]",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('fortigateSettings').virtualMachineSize]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',  parameters('fortigateSettings').fortiGateNic1Name)]",
+                            "properties": {
+                                "primary": true
+                            }
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('fortigateSettings').virtualmachineName]",
+                    "adminUsername": "[parameters('fortigateSettings').adminUsername]",
+                    "adminPassword": "[parameters('fortigateSettings').adminPassword]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[parameters('fortigateSettings').publisher]",
+                        "offer": "[parameters('fortigateSettings').product]",
+                        "sku": "[parameters('fortigateSettings').sku]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "createOption": "FromImage"
+                    }
+                },
+                "dataDisks": [
+                    {
+                        "diskSizeGB": "30",
+                        "lun": 0,
+                        "createOption": "Empty"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('fortigateSettings').virtualNetworkName]",
+            "apiVersion": "2017-06-01",
+            "dependsOn": [
+                "[concat('Microsoft.Network/routeTables/', parameters('vNetPeeringSettings').routeTable1Name)]",
+                "[concat('Microsoft.Network/routeTables/', parameters('vNetPeeringSettings').routeTable2Name)]"
+            ],
+            "location": "[parameters('fortigateSettings').location]",
+            "comments": "This will build a Virtual Network.",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.0.0/16"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('fortigateSettings').fortiGatesubnetName1]",
+                        "properties": {
+                            "addressPrefix": "[parameters('fortigateSettings').fgSubnet1Prefix]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('fortigateSettings').fortiGatesubnetName2]",
+                        "properties": {
+                            "addressPrefix": "[parameters('fortigateSettings').fgSubnet2Prefix]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[parameters('fortigateSettings').fortiGatepublicIpAddressName1]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('fortigateSettings').location]",
+            "comments": "Public IP for your Primary NIC",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[concat(parameters('fortigateSettings').dnsLabelPrefix,'sample123')]"
+                }
+            }
+        },
+        {
+            "name": "[parameters('fortigateSettings').fortiGatepublicIpAddressName2]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('fortigateSettings').location]",
+            "comments": "Public IP for your Primary NIC",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[concat(parameters('fortigateSettings').dnsLabelPrefix,'test123')]"
+                }
+            }
+        },
+        {
+            "name": "[parameters('fortigateSettings').fortiGateNic1Name]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('fortigateSettings').location]",
+            "comments": "This will be your Primary NIC",
+            "dependsOn": [
+                "[concat('Microsoft.Network/publicIPAddresses/', parameters('fortigateSettings').fortiGatepublicIpAddressName1)]",
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('fortigateSettings').virtualNetworkName)]",
+                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('fortigateSettings').fgnetworkSecurityGroupName)]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[parameters('fortigateSettings').fgsubnet1Ref]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIpAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', parameters('fortigateSettings').fortiGatepublicIpAddressName1)]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[parameters('fortigateSettings').fortiGateNic2Name]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('fortigateSettings').location]",
+            "comments": "This will be your Secondary NIC",
+            "dependsOn": [
+                "[concat('Microsoft.Network/publicIPAddresses/', parameters('fortigateSettings').fortiGatepublicIpAddressName2)]",
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('fortigateSettings').virtualNetworkName)]",
+                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('fortigateSettings').fgnetworkSecurityGroupName)]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[parameters('fortigateSettings').fgsubnet2Ref]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIpAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', parameters('fortigateSettings').fortiGatepublicIpAddressName2)]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('fortigateSettings').fgnetworkSecurityGroupName]",
+            "apiVersion": "2015-06-15",
+            "location": "[parameters('fortigateSettings').location]",
+            "properties": {
+                "securityRules": [
+                    {
+                      "name": "first_rule",
+                      "properties": {
+                        "description": "This is the first rule",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "23-45",
+                        "destinationPortRange": "46-56",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 123,
+                        "direction": "Inbound"
+                      }
+                    }
+                  ]
+            }
+        },
+        {
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[parameters('fortigateSettings').fgAvailabilitysetName]",
+            "apiVersion": "2017-03-30",
+            "location": "[parameters('fortigateSettings').location]",
+            "properties": {
+                "platformFaultDomainCount": "2",
+                "platformUpdateDomainCount": "2"
+            },
+            "sku": {
+                "name": "Aligned"
+            }
+        },
+        {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[parameters('vNetPeeringSettings').routeTable1Name]",
+            "apiVersion": "2015-06-15",
+            "location": "[parameters('vNetPeeringSettings').location]",
+            "properties": {
+                "routes": [
+                    {
+                        "name": "[concat('to', '-', parameters('fortigateSettings').fortiGatesubnetName2)]",
+                        "properties": {
+                            "addressPrefix": "[parameters('fortigateSettings').fgSubnet2Prefix]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[parameters('fortigateSettings').FGPubFacingAddress]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[parameters('vNetPeeringSettings').routeTable2Name]",
+            "apiVersion": "2017-10-01",
+            "location": "[parameters('vNetPeeringSettings').location]",
+            "properties": {
+                "routes": [
+                    {
+                        "name": "[concat('to', '-', parameters('fortigateSettings').fortiGatesubnetName1)]",
+                        "properties": {
+                            "addressPrefix": "[parameters('fortigateSettings').fgSubnet1Prefix]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[parameters('fortigateSettings').FGDMZAddress]"
+                        }
+                    },
+                    {
+                        "name": "to-Internet",
+                        "properties": {
+                            "AddressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIPAddress": "[parameters('fortigateFirewallSettings').FGDMZAddress]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2016-06-01",
+            "type": "Microsoft.Logic/workflows",
+            "name": "[parameters('vNetPeeringSettings').vNet1to2peerName]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('fortigateSettings').virtualNetworkName)]",
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('workloadSettings').virtualNetworkName)]"
+            ],
+            "comments": "This is the peering from vNet 1 to vNet 2",
+            "properties": {
+                "allowVirtualNetworkAccess": "true",
+                "allowForwardedTraffic": "false",
+                "allowGatewayTransit": "false",
+                "useRemoteGateways": "false",
+                "remoteVirtualNetwork": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks',parameters('workloadSettings').virtualNetworkName)]"
+                }
+            }
+        },
+        {
+            "apiVersion": "2016-06-01",
+            "type": "Microsoft.Logic/workflows",
+            "name": "[parameters('vNetPeeringSettings').vNet2to1peerName]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('fortigateSettings').virtualNetworkName)]",
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('workloadSettings').virtualNetworkName)]"
+            ],
+            "comments": "This is the peering from vNet 1 to vNet 2",
+            "properties": {
+                "allowVirtualNetworkAccess": "true",
+                "allowForwardedTraffic": "false",
+                "allowGatewayTransit": "false",
+                "useRemoteGateways": "false",
+                "remoteVirtualNetwork": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks',parameters('fortigateSettings').virtualNetworkName)]"
+                }
+            }
+        }
+    ]
+}
