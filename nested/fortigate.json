@@ -272,8 +272,8 @@
             "comments": "This is the peering from vNet 1 to vNet 2",
             "properties": {
                 "allowVirtualNetworkAccess": "true",
-                "allowForwardedTraffic": "false",
-                "allowGatewayTransit": "false",
+                "allowForwardedTraffic": "true",
+                "allowGatewayTransit": "true",
                 "useRemoteGateways": "false",
                 "remoteVirtualNetwork": {
                     "id": "[resourceId('Microsoft.Network/virtualNetworks',parameters('workloadSettings').virtualNetworkName)]"
@@ -292,8 +292,8 @@
             "comments": "This is the peering from vNet 1 to vNet 2",
             "properties": {
                 "allowVirtualNetworkAccess": "true",
-                "allowForwardedTraffic": "false",
-                "allowGatewayTransit": "false",
+                "allowForwardedTraffic": "true",
+                "allowGatewayTransit": "true",
                 "useRemoteGateways": "false",
                 "remoteVirtualNetwork": {
                     "id": "[resourceId('Microsoft.Network/virtualNetworks',parameters('fortigateSettings').virtualNetworkName)]"
