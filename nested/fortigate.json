@@ -21,6 +21,11 @@
             ],
             "location": "[parameters('fortigateSettings').location]",
             "name": "[parameters('fortigateSettings').virtualmachineName]",
+            "plan": {
+                "name": "fortinet_fg-vm_payg",
+                "product": "fortinet_fortigate-vm_v5",
+                "publisher": "fortinet"
+            },
             "properties": {
                 "hardwareProfile": {
                     "vmSize": "[parameters('fortigateSettings').virtualMachineSize]"
