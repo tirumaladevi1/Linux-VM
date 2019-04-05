@@ -45,50 +45,6 @@
                     "id": "[resourceId('Microsoft.Network/virtualNetworks',parameters('fortigateSettings').virtualNetworkName)]"
                 }
             }
-        },
-        {
-            "type": "Microsoft.Network/routeTables",
-            "name": "[parameters('fortigateSettings').fgrouteTable1Name]",
-            "apiVersion": "2015-06-15",
-            "location": "[parameters('fortigateSettings').location]",
-            "properties": {
-                "routes": [
-                    {
-                        "name": "[concat('to', '-', parameters('fortigateSettings').fortiGatesubnetName2)]",
-                        "properties": {
-                            "addressPrefix": "[parameters('fortigateSettings').fgSubnet2Prefix]",
-                            "nextHopType": "VirtualAppliance",
-                            "nextHopIpAddress": "[parameters('fortigateSettings').FGPubFacingAddress]"
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "type": "Microsoft.Network/routeTables",
-            "name": "[parameters('fortigateSettings').fgrouteTable2Name]",
-            "apiVersion": "2017-10-01",
-            "location": "[parameters('fortigateSettings').location]",
-            "properties": {
-                "routes": [
-                    {
-                        "name": "[concat('to', '-', parameters('fortigateSettings').fortiGatesubnetName1)]",
-                        "properties": {
-                            "addressPrefix": "[parameters('fortigateSettings').fgSubnet1Prefix]",
-                            "nextHopType": "VirtualAppliance",
-                            "nextHopIpAddress": "[parameters('fortigateSettings').FGinternalAddress]"
-                        }
-                    },
-                    {
-                        "name": "to-Internet",
-                        "properties": {
-                            "AddressPrefix": "0.0.0.0/0",
-                            "nextHopType": "VirtualAppliance",
-                            "nextHopIPAddress": "[parameters('fortigateSettings').FGinternalAddress]"
-                        }
-                    }
-                ]
-            }
         }
     ]
 }
