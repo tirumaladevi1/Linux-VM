@@ -12,9 +12,7 @@
             "type": "object"
         }
     },
-    "variables": {
-  
-    },
+    "variables": {},
     "resources": [
         {
             "type": "Microsoft.Compute/virtualMachines",
@@ -85,13 +83,19 @@
                     {
                         "name": "[parameters('fortigateSettings').fortiGatesubnetName1]",
                         "properties": {
-                            "addressPrefix": "[parameters('fortigateSettings').fgSubnet1Prefix]"
+                            "addressPrefix": "[parameters('fortigateSettings').fgSubnet1Prefix]",
+                            "routeTable": {
+                                "id": "[parameters('fortigateSettings').routeTable1Id]"
+                            }
                         }
                     },
                     {
                         "name": "[parameters('fortigateSettings').fortiGatesubnetName2]",
                         "properties": {
-                            "addressPrefix": "[parameters('fortigateSettings').fgSubnet2Prefix]"
+                            "addressPrefix": "[parameters('fortigateSettings').fgSubnet2Prefix]",
+                            "routeTable": {
+                                "id": "[parameters('fortigateSettings').routeTable2Id]"
+                            }
                         }
                     }
                 ]
@@ -170,20 +174,20 @@
             "properties": {
                 "securityRules": [
                     {
-                      "name": "first_rule",
-                      "properties": {
-                        "description": "This is the first rule",
-                        "protocol": "Tcp",
-                        "sourcePortRange": "23-45",
-                        "destinationPortRange": "46-56",
-                        "sourceAddressPrefix": "*",
-                        "destinationAddressPrefix": "*",
-                        "access": "Allow",
-                        "priority": 123,
-                        "direction": "Inbound"
-                      }
+                        "name": "first_rule",
+                        "properties": {
+                            "description": "This is the first rule",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "23-45",
+                            "destinationPortRange": "46-56",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 123,
+                            "direction": "Inbound"
+                        }
                     }
-                  ]
+                ]
             }
         },
         {
