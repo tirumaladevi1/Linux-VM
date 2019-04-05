@@ -148,7 +148,7 @@
             "type": "Microsoft.Network/routeTables",
             "name": "[parameters('workloadSettings').wlrouteTableName]",
             "apiVersion": "2017-10-01",
-            "location": "[parameters('vNetPeeringSettings').location]",
+            "location": "[parameters('workloadSettings').location]",
             "properties": {
                 "routes": [
                     {
