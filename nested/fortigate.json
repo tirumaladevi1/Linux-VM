@@ -36,7 +36,7 @@
                         {
                             "id": "[resourceId('Microsoft.Network/networkInterfaces',  parameters('fortigateSettings').fortiGateNic2Name)]",
                             "properties": {
-                                "primary": true
+                                "primary": false
                             }
                         }
                     ]
