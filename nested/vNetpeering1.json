@@ -19,11 +19,6 @@
             "type": "Microsoft.Logic/workflows",
             "name": "[parameters('vNetPeeringSettings').vNet1to2peerName]",
             "location": "[parameters('vNetPeeringSettings').location]",
-            "dependsOn": [
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('fortigateSettings').virtualNetworkName)]",
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('workloadSettings').virtualNetworkName)]"
-            ],
-            "comments": "This is the peering from vNet 1 to vNet 2",
             "properties": {
                 "allowVirtualNetworkAccess": "true",
                 "allowForwardedTraffic": "true",
@@ -39,10 +34,7 @@
             "type": "Microsoft.Logic/workflows",
             "name": "[parameters('vNetPeeringSettings').vNet2to1peerName]",
             "location": "[parameters('vNetPeeringSettings').location]",
-            "dependsOn": [
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('fortigateSettings').virtualNetworkName)]",
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('workloadSettings').virtualNetworkName)]"
-            ],
+            
             "comments": "This is the peering from vNet 1 to vNet 2",
             "properties": {
                 "allowVirtualNetworkAccess": "true",
