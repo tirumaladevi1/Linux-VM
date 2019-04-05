@@ -34,8 +34,6 @@
             "type": "Microsoft.Logic/workflows",
             "name": "[parameters('vNetPeeringSettings').vNet2to1peerName]",
             "location": "[parameters('vNetPeeringSettings').location]",
-            
-            "comments": "This is the peering from vNet 1 to vNet 2",
             "properties": {
                 "allowVirtualNetworkAccess": "true",
                 "allowForwardedTraffic": "true",
