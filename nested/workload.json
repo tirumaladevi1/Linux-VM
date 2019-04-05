@@ -69,7 +69,10 @@
                     {
                         "name": "[parameters('workloadSettings').subnetName]",
                         "properties": {
-                            "addressPrefix": "[parameters('workloadSettings').wlsubnetPrefix]"
+                            "addressPrefix": "[parameters('workloadSettings').wlsubnetPrefix]",
+                            "routeTable": {
+                                "id": "[parameters('workloadSettings').wlrouteTableId]"
+                            }
                         }
                     }
                 ]
