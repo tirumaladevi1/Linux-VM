@@ -7,9 +7,6 @@
         },
         "vNetPeeringSettings": {
             "type": "object"
-        },
-        "workloadSettings": {
-            "type": "object"
         }
     },
     "variables": {},
