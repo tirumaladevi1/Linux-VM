@@ -20,10 +20,10 @@
             "name": "[parameters('vNetPeeringSettings').vNet1to2peerName]",
             "location": "[parameters('vNetPeeringSettings').location]",
             "properties": {
-                "allowVirtualNetworkAccess": "true",
-                "allowForwardedTraffic": "true",
-                "allowGatewayTransit": "true",
-                "useRemoteGateways": "false",
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": true,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
                 "remoteVirtualNetwork": {
                     "id": "[resourceId('Microsoft.Network/virtualNetworks',parameters('workloadSettings').virtualNetworkName)]"
                 }
@@ -35,10 +35,10 @@
             "name": "[parameters('vNetPeeringSettings').vNet2to1peerName]",
             "location": "[parameters('vNetPeeringSettings').location]",
             "properties": {
-                "allowVirtualNetworkAccess": "true",
-                "allowForwardedTraffic": "true",
-                "allowGatewayTransit": "true",
-                "useRemoteGateways": "false",
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": true,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
                 "remoteVirtualNetwork": {
                     "id": "[resourceId('Microsoft.Network/virtualNetworks',parameters('fortigateSettings').virtualNetworkName)]"
                 }
