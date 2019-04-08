@@ -401,5 +401,11 @@
                 ]
             }
         }
-    ]
+    ],
+    "outputs": {
+            "FortigateFQDN": {
+                "type": "string",
+                "value": "[reference(resourceid('Microsoft.Network/publicIPAddresses',parameters('fortigateSettings').fortiGatepublicIpAddressName1)).dnsSettings.fqdn]"
+            }
+        }
 }
