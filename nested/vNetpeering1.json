@@ -17,7 +17,7 @@
         {
             "apiVersion": "2016-06-01",
             "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
-            "name": "[parameters('vNetPeeringSettings').vNet1to2peerName]",
+            "name": "[parameters('vNetPeeringSettings').vNet1to2peerNamefortigatevnet]",
             "location": "[parameters('vNetPeeringSettings').location]",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('fortigateSettings').virtualNetworkName)]",
@@ -36,7 +36,7 @@
         {
             "apiVersion": "2016-06-01",
             "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
-            "name": "[parameters('vNetPeeringSettings').vNet2to1peerName]",
+            "name": "[parameters('vNetPeeringSettings').vNet2to1peerNameworkloadvnet]",
             "location": "[parameters('vNetPeeringSettings').location]",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('fortigateSettings').virtualNetworkName)]",
