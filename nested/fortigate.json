@@ -71,44 +71,7 @@
                 }
             }
         },
-        {
-            "type": "Microsoft.Network/virtualNetworks",
-            "name": "[parameters('fortigateSettings').virtualNetworkName]",
-            "apiVersion": "2017-06-01",
-            "dependsOn": [
-                "[concat('Microsoft.Network/routeTables/', parameters('fortigateSettings').fgrouteTable1Name)]",
-                "[concat('Microsoft.Network/routeTables/', parameters('fortigateSettings').fgrouteTable2Name)]"
-            ],
-            "location": "[parameters('fortigateSettings').location]",
-            "comments": "This will build a Virtual Network.",
-            "properties": {
-                "addressSpace": {
-                    "addressPrefixes": [
-                        "10.0.0.0/16"
-                    ]
-                },
-                "subnets": [
-                    {
-                        "name": "[parameters('fortigateSettings').fortiGatesubnetName1]",
-                        "properties": {
-                            "addressPrefix": "[parameters('fortigateSettings').fgSubnet1Prefix]",
-                            "routeTable": {
-                                "id": "[parameters('fortigateSettings').routeTable1Id]"
-                            }
-                        }
-                    },
-                    {
-                        "name": "[parameters('fortigateSettings').fortiGatesubnetName2]",
-                        "properties": {
-                            "addressPrefix": "[parameters('fortigateSettings').fgSubnet2Prefix]",
-                            "routeTable": {
-                                "id": "[parameters('fortigateSettings').routeTable2Id]"
-                            }
-                        }
-                    }
-                ]
-            }
-        },
+        
         {
             "name": "[parameters('fortigateSettings').fortiGatepublicIpAddressName1]",
             "type": "Microsoft.Network/publicIPAddresses",
@@ -130,7 +93,6 @@
             "comments": "This will be your Primary NIC",
             "dependsOn": [
                 "[concat('Microsoft.Network/publicIPAddresses/', parameters('fortigateSettings').fortiGatepublicIpAddressName1)]",
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('fortigateSettings').virtualNetworkName)]",
                 "[concat('Microsoft.Network/networkSecurityGroups/', parameters('fortigateSettings').fgnetworkSecurityGroupName)]"
             ],
             "properties": {
@@ -157,7 +119,6 @@
             "location": "[parameters('fortigateSettings').location]",
             "comments": "This will be your Secondary NIC",
             "dependsOn": [
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('fortigateSettings').virtualNetworkName)]",
                 "[concat('Microsoft.Network/networkSecurityGroups/', parameters('fortigateSettings').fgnetworkSecurityGroupName)]"
             ],
             "properties": {
@@ -355,50 +316,6 @@
             },
             "sku": {
                 "name": "Aligned"
-            }
-        },
-        {
-            "type": "Microsoft.Network/routeTables",
-            "name": "[parameters('fortigateSettings').fgrouteTable1Name]",
-            "apiVersion": "2015-06-15",
-            "location": "[parameters('fortigateSettings').location]",
-            "properties": {
-                "routes": [
-                    {
-                        "name": "[concat('to', '-', parameters('fortigateSettings').fortiGatesubnetName2)]",
-                        "properties": {
-                            "addressPrefix": "[parameters('fortigateSettings').fgSubnet2Prefix]",
-                            "nextHopType": "VirtualAppliance",
-                            "nextHopIpAddress": "[parameters('fortigateSettings').FGPubFacingAddress]"
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "type": "Microsoft.Network/routeTables",
-            "name": "[parameters('fortigateSettings').fgrouteTable2Name]",
-            "apiVersion": "2017-10-01",
-            "location": "[parameters('fortigateSettings').location]",
-            "properties": {
-                "routes": [
-                    {
-                        "name": "[concat('to', '-', parameters('fortigateSettings').fortiGatesubnetName1)]",
-                        "properties": {
-                            "addressPrefix": "[parameters('fortigateSettings').fgSubnet1Prefix]",
-                            "nextHopType": "VirtualAppliance",
-                            "nextHopIpAddress": "[parameters('fortigateSettings').FGinternalAddress]"
-                        }
-                    },
-                    {
-                        "name": "to-Internet",
-                        "properties": {
-                            "AddressPrefix": "0.0.0.0/0",
-                            "nextHopType": "VirtualAppliance",
-                            "nextHopIPAddress": "[parameters('fortigateSettings').FGinternalAddress]"
-                        }
-                    }
-                ]
             }
         }
     ],
