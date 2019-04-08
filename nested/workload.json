@@ -53,33 +53,7 @@
                 }
             }
         },
-        {                       
-            "type": "Microsoft.Network/virtualNetworks",
-            "name": "[parameters('workloadSettings').virtualNetworkName]",
-            "apiVersion": "2017-06-01",
-            "location": "[parameters('workloadSettings').location]",
-            "dependsOn": [
-                "[concat('Microsoft.Network/routeTables/', parameters('workloadSettings').wlrouteTableName)]"
-            ],
-            "properties": {
-                "addressSpace": {
-                    "addressPrefixes": [
-                        "10.0.0.0/16"
-                    ]
-                },
-                "subnets": [
-                    {
-                        "name": "[parameters('workloadSettings').subnetName]",
-                        "properties": {
-                            "addressPrefix": "[parameters('workloadSettings').wlsubnetPrefix]",
-                            "routeTable": {
-                                "id": "[parameters('workloadSettings').wlrouteTableId]"
-                            }
-                        }
-                    }
-                ]
-            }
-        },
+        
         
         {
             "name": "[parameters('workloadSettings').publicIpAddressName]",
@@ -102,7 +76,6 @@
             "comments": "This will be your Primary NIC",
             "dependsOn": [
                 "[concat('Microsoft.Network/publicIPAddresses/', parameters('workloadSettings').publicIpAddressName)]",
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('workloadSettings').virtualNetworkName)]",
                 "[concat('Microsoft.Network/networkSecurityGroups/', parameters('workloadSettings').networkSecurityGroupName)]"
             ],
             "properties": {
@@ -287,24 +260,6 @@
                             "destinationPortRanges": [],
                             "sourceAddressPrefixes": [],
                             "destinationAddressPrefixes": []
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "type": "Microsoft.Network/routeTables",
-            "name": "[parameters('workloadSettings').wlrouteTableName]",
-            "apiVersion": "2017-10-01",
-            "location": "[parameters('workloadSettings').location]",
-            "properties": {
-                "routes": [
-                    {
-                        "name": "[concat('to', '-', parameters('workloadSettings').subnetName)]",
-                        "properties": {
-                            "addressPrefix": "[parameters('workloadSettings').wlsubnetPrefix]",
-                            "nextHopType": "VirtualAppliance",
-                            "nextHopIpAddress": "[parameters('workloadSettings').wlAddress]"
                         }
                     }
                 ]
