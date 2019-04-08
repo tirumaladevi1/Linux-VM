@@ -53,12 +53,14 @@
                 }
             }
         },
-        {
+        {                       
             "type": "Microsoft.Network/virtualNetworks",
             "name": "[parameters('workloadSettings').virtualNetworkName]",
             "apiVersion": "2017-06-01",
             "location": "[parameters('workloadSettings').location]",
-            "comments": "This will build a Virtual Network.",
+            "dependsOn": [
+                "[concat('Microsoft.Network/routeTables/', parameters('workloadSettings').wlrouteTableName)]"
+            ],
             "properties": {
                 "addressSpace": {
                     "addressPrefixes": [
@@ -308,5 +310,11 @@
                 ]
             }
         }
-    ]
+    ],
+    "outputs": {
+        "WorkloadFQDN": {
+            "type": "string",
+            "value": "[reference(resourceid('Microsoft.Network/publicIPAddresses',parameters('workloadSettings').publicIpAddressName)).dnsSettings.fqdn]"
+        }
+    }
 }
