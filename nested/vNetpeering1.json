@@ -1,48 +1,329 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "vNetPeeringSettings": {
-            "type": "object"
-        },
         "fortigateSettings": {
             "type": "object"
         },
-        "workloadSettings": {
+        "vNetPeeringSettings": {
             "type": "object"
         }
     },
     "variables": {},
     "resources": [
         {
-            "apiVersion": "2016-06-01",
-            "type": "Microsoft.Logic/workflows",
-            "name": "[parameters('vNetPeeringSettings').vNet1to2peerName]",
-            "location": "[parameters('vNetPeeringSettings').location]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2016-04-30-preview",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('fortigateSettings').fortiGateNic1Name)]",
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('fortigateSettings').fortiGateNic2Name)]",
+                "[concat('Microsoft.Compute/availabilitySets/', parameters('fortigateSettings').fgAvailabilitysetName)]"
+            ],
+            "location": "[parameters('fortigateSettings').location]",
+            "name": "[parameters('fortigateSettings').virtualmachineName]",
+            "plan": {
+                "name": "fortinet_fg-vm_payg",
+                "product": "fortinet_fortigate-vm_v5",
+                "publisher": "fortinet"
+            },
             "properties": {
-                "allowVirtualNetworkAccess": "true",
-                "allowForwardedTraffic": "true",
-                "allowGatewayTransit": "false",
-                "useRemoteGateways": "false",
-                "remoteVirtualNetwork": {
-                    "id": "[resourceId('Microsoft.Network/virtualNetworks',parameters('workloadSettings').virtualNetworkName)]"
+                "hardwareProfile": {
+                    "vmSize": "[parameters('fortigateSettings').virtualMachineSize]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',  parameters('fortigateSettings').fortiGateNic1Name)]",
+                            "properties": {
+                                "primary": true
+                            }
+                        },
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',  parameters('fortigateSettings').fortiGateNic2Name)]",
+                            "properties": {
+                                "primary": false
+                            }
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('fortigateSettings').virtualmachineName]",
+                    "adminUsername": "[parameters('fortigateSettings').adminUsername]",
+                    "adminPassword": "[parameters('fortigateSettings').adminPassword]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[parameters('fortigateSettings').publisher]",
+                        "offer": "[parameters('fortigateSettings').product]",
+                        "sku": "[parameters('fortigateSettings').sku]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "createOption": "FromImage"
+                    },
+                    "dataDisks": [
+                        {
+                            "diskSizeGB": "30",
+                            "lun": 0,
+                            "createOption": "Empty"
+                        }
+                    ]
+                }
+            }
+        },
+        
+        {
+            "name": "[parameters('fortigateSettings').fortiGatepublicIpAddressName1]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('fortigateSettings').location]",
+            "comments": "Public IP for your Primary NIC",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[concat(parameters('fortigateSettings').dnsLabelPrefix,'sample123')]"
                 }
             }
         },
         {
-            "apiVersion": "2016-06-01",
-            "type": "Microsoft.Logic/workflows",
-            "name": "[parameters('vNetPeeringSettings').vNet2to1peerName]",
-            "location": "[parameters('vNetPeeringSettings').location]",
+            "name": "[parameters('fortigateSettings').fortiGateNic1Name]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('fortigateSettings').location]",
+            "comments": "This will be your Primary NIC",
+            "dependsOn": [
+                "[concat('Microsoft.Network/publicIPAddresses/', parameters('fortigateSettings').fortiGatepublicIpAddressName1)]",
+                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('fortigateSettings').fgnetworkSecurityGroupName)]"
+            ],
             "properties": {
-                "allowVirtualNetworkAccess": "true",
-                "allowForwardedTraffic": "true",
-                "allowGatewayTransit": "false",
-                "useRemoteGateways": "false",
-                "remoteVirtualNetwork": {
-                    "id": "[resourceId('Microsoft.Network/virtualNetworks',parameters('fortigateSettings').virtualNetworkName)]"
-                }
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[parameters('fortigateSettings').fgsubnet1Ref]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIpAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', parameters('fortigateSettings').fortiGatepublicIpAddressName1)]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[parameters('fortigateSettings').fortiGateNic2Name]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('fortigateSettings').location]",
+            "comments": "This will be your Secondary NIC",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('fortigateSettings').virtualNetworkName)]",
+                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('fortigateSettings').fgnetworkSecurityGroupName)]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[parameters('fortigateSettings').fgsubnet2Ref]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('fortigateSettings').fgnetworkSecurityGroupName]",
+            "apiVersion": "2015-06-15",
+            "location": "[parameters('fortigateSettings').location]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "Port_any",
+                        "etag": "W/\"cf98d0ea-967f-4ac6-8f9f-9714a1497c58\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    },
+                    {
+                        "name": "Port_OutAny",
+                        "etag": "W/\"cf98d0ea-967f-4ac6-8f9f-9714a1497c58\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    }
+                ],
+                "defaultSecurityRules": [
+                    {
+                        "name": "AllowVnetInBound",
+                        "etag": "W/\"cf98d0ea-967f-4ac6-8f9f-9714a1497c58\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "description": "Allow inbound traffic from all VMs in VNET",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "VirtualNetwork",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 65000,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    },
+                    {
+                        "name": "AllowAzureLoadBalancerInBound",
+                        "etag": "W/\"cf98d0ea-967f-4ac6-8f9f-9714a1497c58\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "description": "Allow inbound traffic from azure load balancer",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "AzureLoadBalancer",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 65001,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    },
+                    {
+                        "name": "DenyAllInBound",
+                        "etag": "W/\"cf98d0ea-967f-4ac6-8f9f-9714a1497c58\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "description": "Deny all inbound traffic",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Deny",
+                            "priority": 65500,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    },
+                    {
+                        "name": "AllowVnetOutBound",
+                        "etag": "W/\"cf98d0ea-967f-4ac6-8f9f-9714a1497c58\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "description": "Allow outbound traffic from all VMs to all VMs in VNET",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "VirtualNetwork",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 65000,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    },
+                    {
+                        "name": "AllowInternetOutBound",
+                        "etag": "W/\"cf98d0ea-967f-4ac6-8f9f-9714a1497c58\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "description": "Allow outbound traffic from all VMs to Internet",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "Internet",
+                            "access": "Allow",
+                            "priority": 65001,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    },
+                    {
+                        "name": "DenyAllOutBound",
+                        "etag": "W/\"cf98d0ea-967f-4ac6-8f9f-9714a1497c58\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "description": "Deny all outbound traffic",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Deny",
+                            "priority": 65500,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[parameters('fortigateSettings').fgAvailabilitysetName]",
+            "apiVersion": "2017-03-30",
+            "location": "[parameters('fortigateSettings').location]",
+            "properties": {
+                "platformFaultDomainCount": "2",
+                "platformUpdateDomainCount": "2"
+            },
+            "sku": {
+                "name": "Aligned"
             }
         }
-    ]
+    ],
+    "outputs": {
+            "FortigateFQDN": {
+                "type": "string",
+                "value": "[reference(resourceid('Microsoft.Network/publicIPAddresses',parameters('fortigateSettings').fortiGatepublicIpAddressName1)).dnsSettings.fqdn]"
+            }
+        }
 }
