@@ -15,135 +15,8 @@
     "variables": {},
     "resources": [
         {
-            "type": "Microsoft.Network/virtualNetworks",
-            "name": "[parameters('fortigateSettings').virtualNetworkName]",
-            "apiVersion": "2017-06-01",
-            "dependsOn": [
-                "[concat('Microsoft.Network/routeTables/', parameters('fortigateSettings').fgrouteTable1Name)]",
-                "[concat('Microsoft.Network/routeTables/', parameters('fortigateSettings').fgrouteTable2Name)]"
-            ],
-            "location": "[parameters('fortigateSettings').location]",
-            "comments": "This will build a Virtual Network.",
-            "properties": {
-                "addressSpace": {
-                    "addressPrefixes": [
-                        "10.0.0.0/16"
-                    ]
-                },
-                "subnets": [
-                    {
-                        "name": "[parameters('fortigateSettings').fortiGatesubnetName1]",
-                        "properties": {
-                            "addressPrefix": "[parameters('fortigateSettings').fgSubnet1Prefix]",
-                            "routeTable": {
-                                "id": "[parameters('fortigateSettings').routeTable1Id]"
-                            }
-                        }
-                    },
-                    {
-                        "name": "[parameters('fortigateSettings').fortiGatesubnetName2]",
-                        "properties": {
-                            "addressPrefix": "[parameters('fortigateSettings').fgSubnet2Prefix]",
-                            "routeTable": {
-                                "id": "[parameters('fortigateSettings').routeTable2Id]"
-                            }
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "type": "Microsoft.Network/routeTables",
-            "name": "[parameters('fortigateSettings').fgrouteTable1Name]",
-            "apiVersion": "2015-06-15",
-            "location": "[parameters('fortigateSettings').location]",
-            "properties": {
-                "routes": [
-                    {
-                        "name": "[concat('to', '-', parameters('fortigateSettings').fortiGatesubnetName2)]",
-                        "properties": {
-                            "addressPrefix": "[parameters('fortigateSettings').fgSubnet2Prefix]",
-                            "nextHopType": "VirtualAppliance",
-                            "nextHopIpAddress": "[parameters('fortigateSettings').FGPubFacingAddress]"
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "type": "Microsoft.Network/routeTables",
-            "name": "[parameters('fortigateSettings').fgrouteTable2Name]",
-            "apiVersion": "2017-10-01",
-            "location": "[parameters('fortigateSettings').location]",
-            "properties": {
-                "routes": [
-                    {
-                        "name": "[concat('to', '-', parameters('fortigateSettings').fortiGatesubnetName1)]",
-                        "properties": {
-                            "addressPrefix": "[parameters('fortigateSettings').fgSubnet1Prefix]",
-                            "nextHopType": "VirtualAppliance",
-                            "nextHopIpAddress": "[parameters('fortigateSettings').FGinternalAddress]"
-                        }
-                    },
-                    {
-                        "name": "to-Internet",
-                        "properties": {
-                            "AddressPrefix": "0.0.0.0/0",
-                            "nextHopType": "VirtualAppliance",
-                            "nextHopIPAddress": "[parameters('fortigateSettings').FGinternalAddress]"
-                        }
-                    }
-                ]
-            }
-        },
-        {                       
-            "type": "Microsoft.Network/virtualNetworks",
-            "name": "[parameters('workloadSettings').virtualNetworkName]",
-            "apiVersion": "2017-06-01",
-            "location": "[parameters('workloadSettings').location]",
-            "dependsOn": [
-                "[concat('Microsoft.Network/routeTables/', parameters('workloadSettings').wlrouteTableName)]"
-            ],
-            "properties": {
-                "addressSpace": {
-                    "addressPrefixes": [
-                        "10.0.0.0/16"
-                    ]
-                },
-                "subnets": [
-                    {
-                        "name": "[parameters('workloadSettings').subnetName]",
-                        "properties": {
-                            "addressPrefix": "[parameters('workloadSettings').wlsubnetPrefix]",
-                            "routeTable": {
-                                "id": "[parameters('workloadSettings').wlrouteTableId]"
-                            }
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "type": "Microsoft.Network/routeTables",
-            "name": "[parameters('workloadSettings').wlrouteTableName]",
-            "apiVersion": "2017-10-01",
-            "location": "[parameters('workloadSettings').location]",
-            "properties": {
-                "routes": [
-                    {
-                        "name": "[concat('to', '-', parameters('workloadSettings').subnetName)]",
-                        "properties": {
-                            "addressPrefix": "[parameters('workloadSettings').wlsubnetPrefix]",
-                            "nextHopType": "VirtualAppliance",
-                            "nextHopIpAddress": "[parameters('workloadSettings').wlAddress]"
-                        }
-                    }
-                ]
-            }
-        },
-        {
             "apiVersion": "2016-06-01",
-            "type": "Microsoft.Logic/workflows",
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "name": "[parameters('vNetPeeringSettings').vNet1to2peerName]",
             "location": "[parameters('vNetPeeringSettings').location]",
             "dependsOn": [
@@ -162,7 +35,7 @@
         },
         {
             "apiVersion": "2016-06-01",
-            "type": "Microsoft.Logic/workflows",
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "name": "[parameters('vNetPeeringSettings').vNet2to1peerName]",
             "location": "[parameters('vNetPeeringSettings').location]",
             "dependsOn": [
