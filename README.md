@@ -24,17 +24,17 @@
       
        - [2.2.2. Off boarding/Removing Onboarded Gateway and Tracker](#222-off-boarding/removing-onboarded-gateway-and-tracker)
 
-- [3. Shipment Management](#3-shipment-management)
+   - [3. Shipment Management](#3-shipment-management)
 
-    - [3.1. Create Shipment](#31-create-shipment)
+      - [3.1. Create Shipment](#31-create-shipment)
 
-    - [3.2. Mapping Beacons to Objects](#32-mapping-beacons-to-objects)
+      - [3.2. Mapping Beacons to Objects](#32-mapping-beacons-to-objects)
 
-      - [3.2.1. Adding a Mapping](#321-adding-a-mapping)
+        - [3.2.1. Adding a Mapping](#321-adding-a-mapping)
 
-      - [3.2.2. Assigning Gateways and Tracker](#322-assigning-gateways-and-tracker)
+        - [3.2.2. Assigning Gateways and Tracker](#322-assigning-gateways-and-tracker)
 
-      - [3.2.3. Uploading and Viewing Documents](#323-uploading-and-viewing-documents)
+        - [3.2.3. Uploading and Viewing Documents](#323-uploading-and-viewing-documents)
 
     - [3.3. Updating Shipment Status](#33-updating-shipment-status)
 
