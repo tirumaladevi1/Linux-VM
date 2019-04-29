@@ -4,9 +4,9 @@
 
 ![alt text](https://github.com/sysgain/PJ-TITAN-SECURE-COLD-CHAIN/blob/dev/Documentation/images/0.png)
 
-### Contents 
-
- - [1. Introduction to User Guide](#1-introduction-to-user-guide)
+### Contents
+ 
+ - [1. Introduction to User Guide](#1-introduction-to-user-guide)
 
  - [2. Accessing the Web Application](#2-accessing-the-web-application)
 
