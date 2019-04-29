@@ -7,7 +7,6 @@
 ### Contents
  
  - [1. Introduction to User Guide](#1-introduction-to-user-guide)
-
  - [2. Accessing the Web Application](#2-accessing-the-web-application)
    - [2.1 User Management ](#21-user-management)
      - [2.1.1. User and assigning role](#211-user-and-assigning-role)
@@ -16,7 +15,6 @@
    - [2.2. Device Management](#22-device-management)
       - [2.2.1. Gateway and Tracker Onboarding](#221-gateway-and-tracker-onboarding)
       - [2.2.2. Off boarding/Removing Onboarded Gateway and Tracker](#222-off-boarding/removing-onboarded-gateway-and-tracker)
-
  - [3. Shipment Management](#3-shipment-management)
    - [3.1. Create Shipment](#31-create-shipment)
    - [3.2. Mapping Beacons to Objects](#32-mapping-beacons-to-objects)
