@@ -1,6 +1,9 @@
 # Microsoft
+
 # ColdChain Solution
+
 ![alt text](https://github.com/sysgain/PJ-TITAN-SECURE-COLD-CHAIN/blob/dev/Documentation/images/0.png)
+
 ### Contents 
 
  - [1. Introduction to User Guide](#1-introduction-to-user-guide)
@@ -16,6 +19,7 @@
       - [2.1.3. Deleting a User](#213-deleting-a-user)
 
     - [2.2. Device Management](#22-device-management)
+    
       - [2.2.1. Gateway and Tracker Onboarding](#221-gateway-and-tracker-onboarding)
       
       - [2.2.2. Off boarding/Removing Onboarded Gateway and Tracker](#222-off-boarding/removing-onboarded-gateway-and-tracker)
