@@ -18,7 +18,7 @@
     - [2.2. Device Management](#22-device-management)
       - [2.2.1. Gateway and Tracker Onboarding](#221-gateway-and-tracker-onboarding)
       
-      - [2.2.2. Off boarding/Removing Onboarded Gateway and Tracker](#222-off boarding/removing-onboarded-gateway-and-tracker)
+      - [2.2.2. Off boarding/Removing Onboarded Gateway and Tracker](#222-off-boarding/removing-onboarded-gateway-and-tracker)
 
 - [3. Shipment Management](#3-shipment-management)
 
