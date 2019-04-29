@@ -20,21 +20,12 @@
  - [3. Shipment Management](#3-shipment-management)
    - [3.1. Create Shipment](#31-create-shipment)
    - [3.2. Mapping Beacons to Objects](#32-mapping-beacons-to-objects)
-
-        - [3.2.1. Adding a Mapping](#321-adding-a-mapping)
-
-        - [3.2.2. Assigning Gateways and Tracker](#322-assigning-gateways-and-tracker)
-
-        - [3.2.3. Uploading and Viewing Documents](#323-uploading-and-viewing-documents)
-
-    - [3.3. Updating Shipment Status](#33-updating-shipment-status)
-
-      - [3.3.1 Deactivating Shipment](#331-deactivating-shipment)
-
-    - [3.4. Dashboard](#34-dashboard)
-
-      - [3.4.1. Dashboard Summary](#341-dashboard-summary)
-
-      - [3.4.2 Specific Shipment Dashboard](#342-specific-shipment-dashboard)
-
-    - [3.5 Report](#35-report)
+      - [3.2.1. Adding a Mapping](#321-adding-a-mapping)
+      - [3.2.2. Assigning Gateways and Tracker](#322-assigning-gateways-and-tracker)
+      - [3.2.3. Uploading and Viewing Documents](#323-uploading-and-viewing-documents)
+   - [3.3. Updating Shipment Status](#33-updating-shipment-status)
+      - [3.3.1 Deactivating Shipment](#331-deactivating-shipment)
+   - [3.4. Dashboard](#34-dashboard)
+      - [3.4.1. Dashboard Summary](#341-dashboard-summary)
+      - [3.4.2 Specific Shipment Dashboard](#342-specific-shipment-dashboard) 
+    - [3.5 Report](#35-report)
