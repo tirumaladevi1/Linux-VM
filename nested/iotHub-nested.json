@@ -22,7 +22,7 @@
             },
             "sku": {
                 "name": "[parameters('iotHubSettings').skuName]",
-                "capacity": "[parameters('iotHubSettings').sku_units]"
+                "capacity": "[parameters('iotHubSettings').skuCapacity]"
             }
         }
     ]
