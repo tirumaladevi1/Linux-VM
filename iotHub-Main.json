@@ -1,0 +1,38 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "defaultValue": "West US 2"
+        }
+    },
+    "variables": {
+        "iotHubSettings": {
+            "skuName": "F1",
+            "skuCapacity": "1",
+            "location": "[parameters('location')]",
+            "iotHubName": "[concat('iothub', uniquestring('resourcegroup.id'))]"
+        },
+        "baseUrl":"https://raw.githubusercontent.com/tirumaladevi1/Linux-VM/master/"
+    },
+    "resources":[
+        {
+            "type": "Microsoft.Resources/deployments",
+            "name": "iotHub",
+            "apiVersion": "2016-02-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'),'nested/iotHub-nested.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "iotHubSettings": {
+                        "value": "[variables('iotHubSettings')]"
+                    }
+                }
+            }
+        }
+    ]
+}
