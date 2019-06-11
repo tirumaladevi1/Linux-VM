@@ -1,0 +1,49 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sqlsettings": {
+            "type": "object"
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2016-01-01",
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[parameters('sqlSettings').storageName]",
+            "location": "[parameters('sqlSettings').location]",
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "kind": "Storage",
+            "properties": {}
+        },
+        {
+            "apiVersion": "2015-05-01-preview",
+            "location": "[variables('sqlSettings').location]",
+            "type": "Microsoft.Sql/servers",
+            "name": "[variables('sqlSettings').severName]",
+            "properties": {
+                "administratorLogin": "[variables('sqlSettings').administratorLogin]",
+                "administratorLoginPassword": "[variables('sqlSettings').administratorLoginPassword]",
+                "version": "12.0"
+            },
+            "resources": [
+                {
+                    "apiVersion": "2017-10-01-preview",
+                    "type": "databases",
+                    "dependsOn": [
+                        "[concat('Microsoft.Sql/servers/', variables('sqlSettings').severName)]"
+                    ],
+                    "location": "[variables('sqlSettings').location]",
+                    "name": "[variables('sqlSettings').databaseName]",
+                    "properties": {
+                        "databaseEdition": "[variables('sqlSettings').databaseEdition]",
+                        "collation": "[variables('sqlSettings').databaseCollation]",
+                        "maxSizeBytes": "[variables('sqlSettings').databaseMaxSizeBytes]"
+                    }
+                }
+            ]
+        }
+    ]
+} 
