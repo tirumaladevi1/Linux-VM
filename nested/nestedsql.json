@@ -35,7 +35,7 @@
                     "location": "[parameters('sqlSettings').location]",
                     "name": "[parameters('sqlSettings').databaseName]",
                     "dependsOn": [
-                        "[concat('Microsoft.Sql/servers/', parameters('sqlSettings').severName)]"
+                        "[concat('Microsoft.Sql/servers/', parameters('sqlSettings').serverName)]"
                     ],   
                     "properties": {
                         "databaseEdition": "[parameters('sqlSettings').databaseEdition]",
