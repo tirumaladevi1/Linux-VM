@@ -1,0 +1,160 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "defaultvalue": "West US 2"
+        },
+        "adminUserName": {
+            "type": "string"
+        },
+        "adminPassword": {
+            "type": "securestring"
+        }
+    },
+    "variables": {
+        "vNetsettings": {
+            "virtualNetworkName": "[variables('virtualNetworkName1')]",
+            "addressPrefix": "10.0.0.0/16",
+            "subnetName": "[variables('subnetName1')]",
+            "subnetPrefix": "10.0.0.0/24",
+            "location1": "[parameters('location')]"
+        },
+        "pipSettings": {
+            "publicIPAddressName": "[concat('pip',variables('suffix'))]",
+            "pubIpType": "Dynamic",
+            "dnsLbName": "tirumala",
+            "location1": "[parameters('location')]"
+        },
+        "nsgSettings": {
+            "location1": "[parameters('location')]",
+            "networkSecurityGroupName": "tirumala123"
+        },
+        "nicSettings": {
+            "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName1'), variables('subnetName1'))]",
+            "nicName": "[concat('nic',variables('suffix'))]",
+            "location1": "[parameters('location')]"
+        },
+        "vmSettings": {
+            "location1": "[parameters('location')]",
+            "virtualMachineName": "[concat('virtualmac',variables('suffix'))]",
+            "userName": "[parameters('adminUserName')]",
+            "password": "[parameters('adminPassword')]",
+            "virtualmachinesize": "Standard_DS1_v2",
+            "imagePublisher": "Canonical",
+            "imageOffer": "UbuntuServer",
+            "ubuntuOSVersion": "14.04.4-LTS"
+        },
+        "storageSettings": {
+            "storageName": "[concat('storageacc',variables('suffix'))]",
+            "storageAccountType": "standard_LRS",
+            "location1": "[parameters('location')]"
+        },
+        "baseurl": "https://raw.githubusercontent.com/tirumaladevi1/Linux-VM/master/",
+        "virtualNetworkName1": "vnet1",
+        "subnetName1": "subNet1",
+        "location1": "[parameters('location')]",
+        "suffix": "[substring(uniqueString(resourceGroup().id), 0, 4)]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2016-02-01",
+            "type": "Microsoft.Resources/deployments",
+            "name": "vNet",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'), 'nested/vnet.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vNetsettings": {
+                        "value": "[variables('vNetsettings')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2016-02-01",
+            "type": "Microsoft.Resources/deployments",
+            "name": "pip",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'), 'nested/nestedpip.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "pipSettings": {
+                        "value": "[variables('pipSettings')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2016-02-01",
+            "type": "Microsoft.Resources/deployments",
+            "name": "nsg",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'), 'nested/nestedNsg.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "nsgSettings": {
+                        "value": "[variables('nsgSettings')]"
+                    }
+                }
+            }
+        },          
+        {
+            "apiVersion": "2016-02-01",
+            "type": "Microsoft.Resources/deployments",
+            "name": "nic",
+            "dependsOn": [
+                "vNet",
+                "pip"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'), 'nested/nestednic.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "nicSettings": {
+                        "value": "[variables('nicSettings')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2016-02-01",
+            "type": "Microsoft.Resources/deployments",
+            "name": "virtualMachine",
+            "dependsOn": [
+                "nic"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'), 'nested/nestedLinuxVm.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vmSettings": {
+                        "value": "[variables('vmSettings')]"
+                    },
+                    "storageSettings": {
+                        "value": "[variables('storageSettings')]"
+                    },
+                    "nicSettings": {
+                        "value": "[variables('nicSettings')]"
+                    }
+                }
+            }
+        }
+    ]
+}
