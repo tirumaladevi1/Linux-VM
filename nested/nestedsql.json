@@ -22,7 +22,7 @@
             "apiVersion": "2015-05-01-preview",
             "location": "[parameters('sqlSettings').location]",
             "type": "Microsoft.Sql/servers",
-            "name": "[variables('sqlSettings').severName]",
+            "name": "[parameters('sqlSettings').severName]",
             "properties": {
                 "administratorLogin": "[parameters('sqlSettings').administratorLogin]",
                 "administratorLoginPassword": "[parameters('sqlSettings').administratorLoginPassword]",
