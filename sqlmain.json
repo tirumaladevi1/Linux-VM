@@ -1,0 +1,54 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "defaultValue": "WestUS2"
+        },
+        "suffix": {
+            "type": "string"
+        },
+        "administratorLogin": {
+            "type": "string"
+        },
+        "administratorLoginPassword": {
+            "type": "securestring"
+        }
+    },
+    "variables":{
+        "sqlSettings": {
+            "storageName": "[concat('stor',uniquestring('resourcegroup.id'))]",
+            "location": "[parameters('location')]",
+            "serverName": "[concat('sql',parameters('suffix'))]",
+            "administratorLogin": "[parameters('administratorLogin')]",
+            "administratorLoginPassword": "[parameters('administratorLoginPassword')]",
+            "databaseName": "sampledb",
+            "databaseEdition": "Standard",
+            "databaseCollation": "SQL_Latin1_General_CP1_CI_AS",
+            "databaseMaxSizeBytes": "268435456000",
+            "databaseRequestedServiceObjectiveName": "S1"  
+        },
+        "baseUrl":"https://raw.githubusercontent.com/tirumaladevi1/Linux-VM/master/"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/deployments",
+            "name": "sqldb",
+            "apiVersion": "2016-02-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'),'nested/nestedsql.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "sqlSettings": {
+                        "value": "[variables('sqlSettings')]"
+                    }
+                }
+            }
+        }
+
+    ]
+}
