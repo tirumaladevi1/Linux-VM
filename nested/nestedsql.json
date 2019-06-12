@@ -36,13 +36,12 @@
                     "name": "[parameters('sqlSettings').databaseName]",
                     "dependsOn": [
                         "[concat('Microsoft.Sql/servers/', parameters('sqlSettings').severName)]"
-                    ],
-                    
+                    ],   
                     "properties": {
                         "databaseEdition": "[parameters('sqlSettings').databaseEdition]",
                         "collation": "[parameters('sqlSettings').databaseCollation]",
                         "maxSizeBytes": "[parameters('sqlSettings').databaseMaxSizeBytes]",
-                        "databaseRequestedServiceObjectiveName": "S1"
+                        "requestedServiceObjectiveName":"[parameters('sqlSettings').databaseRequestedServiceObjectiveName]"      
                     }
                 }
             ]
