@@ -32,15 +32,17 @@
                 {
                     "apiVersion": "2017-10-01-preview",
                     "type": "databases",
+                    "location": "[parameters('sqlSettings').location]",
+                    "name": "[parameters('sqlSettings').databaseName]",
                     "dependsOn": [
                         "[concat('Microsoft.Sql/servers/', parameters('sqlSettings').severName)]"
                     ],
-                    "location": "[parameters('sqlSettings').location]",
-                    "name": "[parameters('sqlSettings').databaseName]",
+                    
                     "properties": {
                         "databaseEdition": "[parameters('sqlSettings').databaseEdition]",
                         "collation": "[parameters('sqlSettings').databaseCollation]",
-                        "maxSizeBytes": "[parameters('sqlSettings').databaseMaxSizeBytes]"
+                        "maxSizeBytes": "[parameters('sqlSettings').databaseMaxSizeBytes]",
+                        "databaseRequestedServiceObjectiveName": "S1"
                     }
                 }
             ]
