@@ -10,6 +10,12 @@
         },
         "storageSettings": {
             "type": "object"
+        },
+        "nsgSettings": {
+            "type": "object"
+        },
+        "pipSettings": {
+            "type": "object"
         }
     },
     "variables": {},
@@ -61,36 +67,98 @@
             }
         },
         {
-            "apiVersion": "2018-06-01",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[concat(parameters('vmSettings').virtualMachineName, '/', 'exten')]",
-            "location": "[parameters('vmSettings').location1]",
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', parameters('vmSettings').virtualMachineName)]"
-            ],
-            "tags": {
-                "displayName": "templatedeploy"
-            },
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('vNetsettings').virtualNetworkName]",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('vNetsettings').location]",
+            "comments": "This will build a Virtual Network.",
             "properties": {
-                "publisher": "Microsoft.Azure.Extensions",
-                "type": "CustomScript",
-                "typeHandlerVersion": "2.0",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "fileUris": [
-                        "https://github.com/tirumaladevi1/Linux-VM/blob/master/lamp.sh"
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.0.0/16"
                     ]
                 },
-                "protectedSettings": {
-                    "commandToExecute": "sh lamp.sh"
+                "subnets": [
+                    {
+                        "name": "[parameters('vNetsettings').subnetName]",
+                        "properties": {
+                            "addressPrefix": "10.0.0.0/24"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[parameters('pipSettings').publicIpAddressName1]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('pipSettings').location]",
+            "comments": "Public IP for your Primary NIC",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[concat(parameters('pipSettings').dnslabelPrefix,'sample')]"
                 }
             }
         },
         {
+            "name": "[parameters('nicSettings').nicName]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2017-06-01",
+            "location": "[parameters('nicSettings').location]",
+            "comments": "This will be your Primary NIC",
+            "dependsOn": [
+                "[concat('Microsoft.Network/publicIPAddresses/', parameters('pipSettings').publicIPAddressName)]",
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('vNetsettings').virtualNetworkName)]",
+                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('nsgSettings').networkSecurityGroupName)]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[parameters('nicSettings').subnetRef]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIpAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', parameters('pipSettings).publicIPAddressName)]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('nsgSettings').networkSecurityGroupName]",
+            "apiVersion": "2015-06-15",
+            "location": "[parameters('nsgSettings').location]",
+            "properties": {
+                "securityRules": [
+                    {
+                      "name": "first_rule",
+                      "properties": {
+                        "description": "This is the first rule",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "23-45",
+                        "destinationPortRange": "46-56",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 123,
+                        "direction": "Inbound"
+                      }
+                    }
+                  ]
+            }
+        },
+        
+        {
             "type": "Microsoft.Storage/storageAccounts",
             "name": "[parameters('storageSettings').storageName]",
             "apiVersion": "2017-06-01",
-            "location": "[parameters('storageSettings').location1]",
+            "location": "[parameters('storageSettings').location]",
             "sku": {
                 "name": "[parameters('storageSettings').storageAccountType]"
             },
