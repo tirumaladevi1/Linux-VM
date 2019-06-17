@@ -16,6 +16,9 @@
         },
         "pipSettings": {
             "type": "object"
+        },
+        "vNetsettings": {
+            "type": "object"
         }
     },
     "variables": {},
