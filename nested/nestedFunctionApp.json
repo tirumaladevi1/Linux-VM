@@ -1,0 +1,37 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "FunctionAppsettings": {
+        "type":"object"
+    }
+  },
+  "variables": {
+  },
+  "resources": [
+    {
+        "type": "Microsoft.Web/serverfarms",
+        "apiVersion": "2015-04-01",
+        "name": "[parameters('FunctionAppsettings')]",
+        "location": "[parameters('FunctionAppsettings').location]",
+        "properties": {
+          "name": "[parameters('FunctionAppsettings').hostingPlanName]",
+          "computeMode": "Dynamic",
+          "sku": "Dynamic"
+        }
+      },
+      {
+        "apiVersion": "2015-08-01",
+        "type": "Microsoft.Web/sites",
+        "name": "[parameters('FunctionAppsettings').FunctionAppName]",
+        "location": "[parameters('FunctionAppsettings').location]",
+        "kind": "functionapp",
+        "dependsOn": [
+          "[resourceId('Microsoft.Web/serverfarms', parameters('FunctionAppsettings').hostingPlanName)]"
+        ],
+        "properties": {
+
+        }
+      }
+  ]
+}
