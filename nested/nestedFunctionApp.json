@@ -12,7 +12,7 @@
     {
         "type": "Microsoft.Web/serverfarms",
         "apiVersion": "2015-04-01",
-        "name": "[parameters('FunctionAppsettings')]",
+        "name": "[parameters('FunctionAppsettings').hostingPlanName]",
         "location": "[parameters('FunctionAppsettings').location]",
         "properties": {
           "name": "[parameters('FunctionAppsettings').hostingPlanName]",
