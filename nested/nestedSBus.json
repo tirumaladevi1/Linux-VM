@@ -14,11 +14,11 @@
       "type": "Microsoft.ServiceBus/namespaces",
       "location": "[parameters('serviceBusSettings').location]",
       "properties": {
-        "copy": {
-          "name": "serviceBuscopy",
-          "count": "[parameters('serviceBusSettings').vmCount]"
-        } 
       },
+      "copy": {
+        "name": "serviceBuscopy",
+        "count": "[parameters('serviceBusSettings').vmCount]"
+      } ,
       "resources": []
     }
 
