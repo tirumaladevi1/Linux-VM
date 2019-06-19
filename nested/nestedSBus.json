@@ -10,14 +10,14 @@
   "resources": [
     {
       "apiVersion": "2015-08-01",
-      "name": "[parameters('serviceBusSettings').serviceBusNamespaceName,copyIndex(1)]",
+      "name": "[concat(parameters('serviceBusSettings').serviceBusNamespaceName,copyIndex(1))]",
       "type": "Microsoft.ServiceBus/namespaces",
       "location": "[parameters('serviceBusSettings').location]",
       "properties": {
         "copy": {
           "name": "serviceBuscopy",
           "count": "[parameters('serviceBusSettings').vmCount]"
-        }
+        } 
       },
       "resources": []
     }
