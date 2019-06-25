@@ -56,7 +56,7 @@
             "type": "string",
             "value": "[parameters('sqlSettings').administratorLoginPassword]"
         },
-        "sql DatabaseName": {
+        "sqlDatabaseName": {
             "type": "string",
             "value": "[parameters('sqlSettings').databaseName]"
         }
