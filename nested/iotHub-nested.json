@@ -47,7 +47,7 @@
   ],
   "outputs": {
     "iotHubKeys": {
-      "type": "object",
+      "type": "string",
       "value": "[concat(parameters('iotHubSettings').iotHubName, '.azure-devices.net')]"
     }
   }
