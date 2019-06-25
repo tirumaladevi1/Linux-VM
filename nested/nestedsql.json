@@ -46,5 +46,19 @@
                 }
             ]
         }
-    ]
+    ],
+    "outputs": {
+        "sqlUsername": {
+            "type": "string",
+            "value": "[parameters('sqlSettings').administratorLogin]"
+        },
+        "sqlPassword": {
+            "type": "string",
+            "value": "[parameters('sqlSettings').administratorLoginPassword]"
+        },
+        "sql DatabaseName": {
+            "type": "string",
+            "value": "[parameters('sqlSettings').databaseName]"
+        }
+    }
 } 
