@@ -13,8 +13,8 @@
     {
       "type": "Microsoft.Devices/IotHubs",
       "apiVersion": "2018-04-01",
-      "name": "[parameters('iotHubName')]",
-      "location": "[parameters('location')]",
+      "name": "[parameters('iotHubSettings').iotHubName]",
+      "location": "[parameters('iotHubSettings').location]",
       "properties": {
         "eventHubEndpoints": {
           "events": {
@@ -40,8 +40,8 @@
         }
       },
       "sku": {
-        "name": "[parameters('skuName')]",
-        "capacity": "[parameters('capacityUnits')]"
+        "name": "[parameters('iotHubSettings').skuName]",
+        "capacity": "[parameters('iotHubSettings').skuCapacity]"
       }
     }
   ],
